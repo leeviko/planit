@@ -1,0 +1,27 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --black: #080808;
+  --grey: #949494;
+  --white: #ffffff;
+
+  --bg: #0c0c0c;
+
+  --accent: #468971;
+  --accent-hover: #3d7863;
+
+  --border-radius: 3px;
+}
+
+@font-face {
+  font-family: 'Quicksand';
+  src: url('../fonts/quicksand.ttf');
+}
+
+body {
+  font-family: 'Quicksand';
+}
