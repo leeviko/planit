@@ -2,10 +2,10 @@
   "name": "planit-server",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
-    "dev": "concurrently \"tsc -w\" \"nodemon ts dist/index.js\""
+    "dev": "concurrently \"tsc -w\" \"nodemon ts dist/server.js\""
   },
   "dependencies": {
     "connect-redis": "^7.1.1",

@@ -19,6 +19,8 @@ export type UserResult = {
   created_at: Date;
 };
 
+export type UserSession = UserResult;
+
 export async function getUserBy(
   key: 'name' | 'email' | 'id',
   value: string
