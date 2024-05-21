@@ -1,6 +1,7 @@
 import express, { Request, Response, Router } from 'express';
 import { auth } from '../../middleware/auth';
-import { body, param, validationResult } from 'express-validator';
+import { validationRes } from '../../middleware/validationRes';
+import { body, param } from 'express-validator';
 import { createBoard, updateBoard } from '../../controllers/boards';
 import { Error } from '../../server';
 
@@ -38,11 +39,8 @@ router.post(
   '/',
   [body('title').escape().trim().isLength({ min: 3, max: 45 })],
   auth,
+  validationRes,
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
     const user = req.session.user!;
     const { title } = req.body;
 
@@ -79,11 +77,8 @@ router.put(
     body('favorited').optional().escape().trim().toBoolean(),
   ],
   auth,
+  validationRes,
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
     const user = req.session.user!;
     const boardId = req.params.boardId;
 

@@ -1,7 +1,8 @@
 import express, { Request, Response, Router } from 'express';
-import { body, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import { login, logout } from '../../controllers/auth';
 import { Error } from '../../server';
+import { validationRes } from '../../middleware/validationRes';
 
 const router: Router = express.Router();
 
@@ -16,11 +17,8 @@ router.post(
     body('username').escape().trim().isLength({ min: 3, max: 25 }),
     body('password').escape().trim().isLength({ min: 4, max: 100 }),
   ],
+  validationRes,
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
     const { username, password } = req.body;
 
     try {

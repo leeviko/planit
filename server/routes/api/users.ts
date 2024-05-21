@@ -1,7 +1,8 @@
 import express, { Request, Response, Router } from 'express';
-import { body, param, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import { NewUser, UserResult, registerUser } from '../../controllers/users';
 import { Error } from '../../server';
+import { validationRes } from '../../middleware/validationRes';
 
 declare module 'express-session' {
   export interface SessionData {
@@ -23,11 +24,8 @@ router.post(
     body('email').escape().trim().isEmail(),
     body('password').escape().trim().isLength({ min: 4, max: 100 }),
   ],
+  validationRes,
   async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
     const { username, email, password } = req.body;
 
     const newUser: NewUser = {
