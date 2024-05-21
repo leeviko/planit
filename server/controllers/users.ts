@@ -3,6 +3,7 @@ import * as db from '../config/db';
 import { nanoid } from 'nanoid';
 import { QueryResult, QueryResultRow } from 'pg';
 import { randomBytes, scrypt, scryptSync } from 'crypto';
+import { Error } from '../server';
 
 export type NewUser = {
   username: string;
@@ -24,6 +25,7 @@ export async function getUserBy(
 ): Promise<QueryResultRow[]> {
   const query = `SELECT name, email, id FROM users WHERE ${key} = $1`;
   const result = await db.query(query, [value]);
+
   return result.rows;
 }
 
@@ -34,10 +36,12 @@ export async function registerUser(user: NewUser) {
   };
 
   const isEmailUnique = await getUserBy('email', newUser.email);
-  if (isEmailUnique.length > 0) throw new Error('Email already in use');
+  if (isEmailUnique.length > 0)
+    return new Error({ status: 400, msg: 'Email already in use' });
 
   const isNameUnique = await getUserBy('name', newUser.username);
-  if (isNameUnique.length > 0) throw new Error('Username already in use');
+  if (isNameUnique.length > 0)
+    return new Error({ status: 400, msg: 'Username already in use' });
 
   /**
    * GENERATE PASSWORD
@@ -51,7 +55,10 @@ export async function registerUser(user: NewUser) {
     hash = salt + ':' + key.toString('hex');
   } catch (err) {
     console.log(err);
-    throw new Error('Failed to register. Please try again later.');
+    return new Error({
+      status: 400,
+      msg: 'Failed to register. Please try again later.',
+    });
   }
 
   /**
@@ -74,6 +81,9 @@ export async function registerUser(user: NewUser) {
     return result.rows[0] as UserResult;
   } catch (err) {
     console.log(err);
-    throw new Error('Failed to register. Please try again later.');
+    return new Error({
+      status: 400,
+      msg: 'Failed to register. Please try again later.',
+    });
   }
 }

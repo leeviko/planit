@@ -4,6 +4,20 @@ import session from 'express-session';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 
+export type TError = {
+  status: number;
+  msg: string;
+};
+
+export class Error {
+  status;
+  msg;
+  constructor({ status, msg }: TError) {
+    this.status = status;
+    this.msg = msg;
+  }
+}
+
 dotenv.config({
   path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local',
 });
@@ -32,15 +46,17 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: 'auto',
-      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
       sameSite: 'strict',
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 60 * 1, // 1 hour
     },
   })
 );
 
 app.use('/api/users', require('./routes/api/users'));
+app.use('/api/auth', require('./routes/api/auth'));
+app.use('/api/boards', require('./routes/api/boards'));
 
 app.listen(port, () => {
   console.log(`⚡ Server is running on port ${port}`);
