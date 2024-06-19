@@ -14,6 +14,12 @@
   --accent: #468971;
   --accent-hover: #3d7863;
 
+  --link: #007bff;
+
+  --red-light: rgb(164, 40, 40);
+  --red: rgb(139, 32, 32);
+  --red-015: rgba(139, 32, 32, 0.15);
+
   --border-radius: 3px;
 }
 
@@ -23,5 +29,35 @@
 }
 
 body {
+  color: var(--white);
   font-family: 'Quicksand';
+  background-color: var(--bg);
+  height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: var(--link);
+}
+
+.btn,
+.btn-line {
+  text-decoration: none;
+  transition: all 0.15s ease;
+  font-family: inherit;
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: var(--border-radius);
+  border: 2px solid var(--accent);
+  padding: 0.3rem 0.5rem;
+  cursor: pointer;
+}
+
+.btn {
+  background-color: var(--accent);
+}
+
+.btn:hover,
+.btn-line:hover {
+  border-color: var(--accent-hover);
+  background-color: var(--accent-hover);
 }

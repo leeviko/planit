@@ -20,9 +20,21 @@ const router: Router = express.Router();
 router.post(
   '/',
   [
-    body('username').escape().trim().isLength({ min: 3, max: 25 }),
-    body('email').escape().trim().isEmail(),
-    body('password').escape().trim().isLength({ min: 4, max: 100 }),
+    body('username')
+      .escape()
+      .trim()
+      .isLength({ min: 3, max: 25 })
+      .withMessage('Username must be between 3 and 25 characters'),
+    body('email')
+      .escape()
+      .trim()
+      .isEmail()
+      .withMessage('Invalid email address'),
+    body('password')
+      .escape()
+      .trim()
+      .isLength({ min: 4, max: 100 })
+      .withMessage('Password must be at least 4 characters long'),
   ],
   validationRes,
   async (req: Request, res: Response) => {

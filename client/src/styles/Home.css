@@ -1,0 +1,25 @@
+.home-content {
+  margin: 10rem 450px;
+}
+
+.home-content .text {
+  margin: 1rem 0;
+}
+
+.home-content h1 {
+  width: 560px;
+}
+
+.home-content p {
+  margin: 1rem 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.home-content a:first-of-type {
+  margin-right: 1rem;
+}
+
+.home-content a {
+  font-size: 0.9rem;
+  padding: 0.3rem 1.2rem;
+}

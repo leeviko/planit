@@ -7,6 +7,20 @@ import { validationRes } from '../../middleware/validationRes';
 const router: Router = express.Router();
 
 /**
+ * @route  GET api/auth
+ * @desc   Check if auth
+ * @access Public
+ */
+router.get('/', (req: Request, res: Response) => {
+  const user = req.session.user;
+  if (!user) {
+    return res.status(401).json({ msg: 'Not logged in' });
+  }
+
+  return res.json(user);
+});
+
+/**
  * @route  POST api/auth
  * @desc   Authenticate user
  * @access Public
@@ -43,10 +57,6 @@ router.post(
  * @access Public
  */
 router.delete('/logout', (req: Request, res: Response) => {
-  if (!req.session || !req.session.user) {
-    return res.json({ msg: 'Already logged out.' });
-  }
-
   try {
     logout(req);
     res.json({ msg: 'Logged out.' });

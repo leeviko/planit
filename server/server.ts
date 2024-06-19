@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
+import cors from 'cors';
 
 export type TError = {
   status: number;
@@ -32,6 +33,8 @@ redisClient.connect().catch(console.error);
 
 redisClient.on('error', (err) => {
   console.log('Redis Client Error', err);
+
+  process.exit(1);
 });
 
 const redisStore = new RedisStore({
@@ -54,6 +57,12 @@ app.use(
   })
 );
 
+app.use(
+  cors({
+    origin: process.env.ORIGIN,
+    credentials: true,
+  })
+);
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
 app.use('/api/boards', require('./routes/api/boards'));
