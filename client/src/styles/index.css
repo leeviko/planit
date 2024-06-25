@@ -13,12 +13,18 @@
 
   --accent: #468971;
   --accent-hover: #3d7863;
+  --accent-010: rgba(70, 137, 113, 0.1);
+  --accent-020: rgba(70, 137, 113, 0.2);
+
+  --accent-dark: #162d25;
 
   --link: #007bff;
 
   --red-light: rgb(164, 40, 40);
   --red: rgb(139, 32, 32);
   --red-015: rgba(139, 32, 32, 0.15);
+
+  --green: #268626;
 
   --border-radius: 3px;
 }

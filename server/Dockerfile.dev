@@ -1,0 +1,14 @@
+FROM node:20-alpine
+
+WORKDIR /app
+ENV NODE_ENV development
+
+COPY package*.json ./
+COPY yarn.lock ./
+RUN yarn && yarn global add typescript
+
+COPY . .
+
+EXPOSE 5000
+
+CMD ["yarn", "dev"]

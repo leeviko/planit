@@ -7,11 +7,17 @@ nav {
 .nav-content {
   display: flex;
   height: inherit;
-  margin: 0 450px;
   justify-content: space-between;
   align-items: center;
 }
 
-img {
+.nav-noauth {
+  margin: 0 450px;
+}
+.nav-auth {
+  margin: 0 25px;
+}
+
+.logo {
   width: 100px;
 }

@@ -1,17 +1,22 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-type TBoard = {
+export type Board = {
   id: string;
-  name: string;
+  user_id: string;
   slug: string;
+  title: string;
+  favorited: boolean;
+  created_at: Date;
+  updated_at: Date;
+  lists: any[];
 };
 
-export type TBoardState = {
-  boards: TBoard[];
-  selectedBoard: TBoard | null;
+export type BoardState = {
+  boards: Board[];
+  selectedBoard: Board | null;
 };
 
-const initialState: TBoardState = {
+const initialState: BoardState = {
   boards: [],
   selectedBoard: null,
 };

@@ -1,0 +1,33 @@
+.boards-page {
+  top: calc(80px + 5rem);
+  position: absolute;
+  max-width: 60%;
+  min-width: 60%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.boards-page h1 {
+  margin-bottom: 1rem;
+}
+
+.boards-page p {
+  margin: 0.5rem 0;
+}
+
+.board-list {
+  position: relative;
+  min-height: 125px;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.board-list .error {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  color: rgba(255, 255, 255, 0.8);
+}

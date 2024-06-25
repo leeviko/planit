@@ -1,0 +1,29 @@
+.toast {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
+  white-space: nowrap;
+  padding: 1rem;
+  min-width: 200px;
+  border-radius: var(--border-radius);
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  font-size: 0.9rem;
+  top: 50px;
+  z-index: 2;
+}
+
+.toast.hide {
+  transform: translate(-50%, -10px);
+  opacity: 0;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translate(-50%, 0px);
+}
+
+.toast.success {
+  background-color: var(--green);
+}

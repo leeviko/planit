@@ -25,9 +25,9 @@ export async function getBoardBy(key: 'id' | 'slug', value: string) {
 }
 
 /**
- * Get board with lists by id
+ * Get board with lists by id or slug
  * @param user - The user performing the action
- * @param id - The ID of the board
+ * @param id - The ID or slug of the board
  * @returns The board or an error
  */
 export async function getBoard(user: UserResult, id: string) {
@@ -41,7 +41,7 @@ export async function getBoard(user: UserResult, id: string) {
       FROM lists list 
       LEFT JOIN cards c ON list.id = c.list_id GROUP BY list.id
     ) l 
-    ON b.id = l.board_id WHERE b.id = $1 AND b.user_id = $2
+    ON b.id = l.board_id WHERE b.id = $1 OR b.slug = $1 AND b.user_id = $2
     GROUP BY b.id
   `;
 

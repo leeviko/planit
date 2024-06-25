@@ -1,36 +1,26 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { useLazyIsAuthQuery } from '../api/apiSlice';
+import { useValidateSessionQuery } from '../api/apiSlice';
 import { RootState } from '../../app/store';
-import { setUser } from './authSlice';
-import { useEffect, useState } from 'react';
+import { authFailed, setUser } from './authSlice';
+import { useEffect } from 'react';
 
 export const useAuth = () => {
-  const [trigger, result] = useLazyIsAuthQuery();
-  const isAuthState = useSelector((state: RootState) => state.auth.isAuth);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const dispatch = useDispatch();
+  const isAuth = useSelector((state: RootState) => state.auth.isAuth);
+  const authStatus = useSelector((state: RootState) => state.auth.status);
+  const { data, error, isLoading } = useValidateSessionQuery(undefined, {
+    skip: isAuth,
+  });
 
   useEffect(() => {
-    if (isAuthState) return setIsAuthenticated(true);
-    const checkIsAuth = async () => {
-      if (result.isError) return setIsAuthenticated(false);
+    if (isAuth) return;
+    if (data) {
+      dispatch(setUser(data));
+      return;
+    } else {
+      dispatch(authFailed());
+    }
+  }, [data, error, dispatch, isAuth, authStatus, isLoading]);
 
-      if (!result.isLoading) {
-        try {
-          const res = await trigger(undefined).unwrap();
-
-          dispatch(setUser(res));
-          return setIsAuthenticated(true);
-        } catch (err) {
-          return setIsAuthenticated(false);
-        }
-      }
-
-      setIsAuthenticated(false);
-    };
-
-    checkIsAuth();
-  }, []);
-
-  return isAuthenticated;
+  return { isAuth: isAuth || !!data, isLoading, error };
 };

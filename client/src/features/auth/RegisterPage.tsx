@@ -6,8 +6,8 @@ import { checkEmail } from '../../utils';
 import { useRegisterMutation } from '../api/apiSlice';
 import { useDispatch } from 'react-redux';
 import { setUser } from './authSlice';
-import { useAuth } from './useAuth';
 import useForm from '../../hooks/useForm';
+import noAuthRoute from './NoAuthRoute';
 
 const RegisterPage = () => {
   const [values, handleChange] = useForm({
@@ -25,7 +25,6 @@ const RegisterPage = () => {
   const navigate = useNavigate();
   const [register, { isLoading }] = useRegisterMutation();
   const dispatch = useDispatch();
-  const isAuth = useAuth();
 
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
@@ -80,10 +79,9 @@ const RegisterPage = () => {
 
   return (
     <div className="register-page">
-      <>{isAuth && navigate('/', { replace: true })}</>
       <div className="box">
         <Link to={'/'} draggable="false">
-          <img src={Logo} draggable="false" />
+          <img className="logo" src={Logo} draggable="false" />
         </Link>
         <h2>Continue by registering</h2>
         <form onSubmit={handleRegister}>
@@ -127,4 +125,5 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+const WrappedRegisterPage = noAuthRoute(RegisterPage);
+export default WrappedRegisterPage;

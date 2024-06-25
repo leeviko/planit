@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom';
 import '../styles/Home.css';
+import noAuthRoute from '../features/auth/NoAuthRoute';
 
-const Home = () => {
+const HomePage = () => {
   return (
     <div className="home-page">
       <div className="home-content">
@@ -23,4 +24,5 @@ const Home = () => {
   );
 };
 
-export default Home;
+const WrappedHomePage = noAuthRoute(HomePage, '/boards');
+export default WrappedHomePage;

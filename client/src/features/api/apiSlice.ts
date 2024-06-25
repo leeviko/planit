@@ -1,6 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Board } from '../boards/boardsSlice';
+import { User } from '../auth/authSlice';
 
-type UserRequest = {
+type RegisterRequest = {
   email: string;
   username: string;
   password: string;
@@ -11,33 +13,85 @@ type LoginRequest = {
   password: string;
 };
 
+type BoardUpdate = {
+  id: string;
+  title?: string;
+  favorited?: boolean;
+};
+
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
+  tagTypes: ['User', 'Board'],
   endpoints: (builder) => ({
-    register: builder.mutation({
-      query: (body: UserRequest) => ({
+    register: builder.mutation<User, RegisterRequest>({
+      query: (body) => ({
         url: '/users',
         method: 'POST',
         credentials: 'include',
         body,
       }),
     }),
-    login: builder.mutation({
-      query: (body: LoginRequest) => ({
+    login: builder.mutation<User, LoginRequest>({
+      query: (body) => ({
         url: '/auth',
         method: 'POST',
+        credentials: 'include',
         body,
       }),
     }),
-    isAuth: builder.query({
+    logout: builder.mutation({
+      query: () => ({
+        url: '/auth/logout',
+        credentials: 'include',
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['User'],
+    }),
+    validateSession: builder.query<User, undefined>({
       query: () => ({
         url: '/auth',
         credentials: 'include',
       }),
+      providesTags: ['User'],
+    }),
+
+    // Boards
+    getBoards: builder.query<Board[], undefined>({
+      query: () => ({
+        url: '/boards',
+        credentials: 'include',
+      }),
+      providesTags: ['Board'],
+    }),
+    getBoard: builder.query<Board, string>({
+      query: (id) => ({
+        url: `/boards/${id}`,
+        credentials: 'include',
+      }),
+    }),
+    updateBoard: builder.mutation<Board, BoardUpdate>({
+      query: ({ id, favorited, title }) => ({
+        url: `/boards/${id}`,
+        method: 'PUT',
+        credentials: 'include',
+        body: {
+          title,
+          favorited,
+        },
+      }),
+      invalidatesTags: ['Board'],
     }),
   }),
 });
 
-export const { useRegisterMutation, useLoginMutation, useLazyIsAuthQuery } =
-  apiSlice;
+export const {
+  useRegisterMutation,
+  useLoginMutation,
+  useLogoutMutation,
+  useValidateSessionQuery,
+
+  useGetBoardsQuery,
+  useGetBoardQuery,
+  useUpdateBoardMutation,
+} = apiSlice;

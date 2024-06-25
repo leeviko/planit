@@ -15,7 +15,7 @@ export async function login(creds: {
   let result;
   try {
     result = await db.query(query, [username]);
-  } catch (err) {
+  } catch (err: any) {
     return new Error({
       status: 401,
       msg: 'Failed to login. Please try again later.',
@@ -24,10 +24,10 @@ export async function login(creds: {
 
   const user = result.rows[0];
   if (!user) {
-    return {
+    return new Error({
       status: 401,
       msg: 'Wrong username or password.',
-    };
+    });
   }
 
   const [salt, storedHash] = user.password.split(':');
@@ -41,9 +41,7 @@ export async function login(creds: {
         msg: 'Wrong username or password.',
       });
     }
-  } catch (err) {
-    console.log(err);
-
+  } catch (err: any) {
     return new Error({
       status: 400,
       msg: 'Failed to login. Please try again later.',

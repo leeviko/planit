@@ -92,19 +92,19 @@ router.get('/', auth, async (req: Request, res: Response) => {
 
 /**
  * @route  GET api/boards/:boardId
- * @desc   Get board by id
+ * @desc   Get board by id or slug
  * @access Private
  */
 router.get(
-  '/:boardId',
-  [param('boardId').escape().trim()],
+  '/:id',
+  [param('id').escape().trim()],
   auth,
   validationRes,
   async (req: Request, res: Response) => {
     const user = req.session.user!;
 
     try {
-      const result = await getBoard(user, req.params.boardId);
+      const result = await getBoard(user, req.params.id);
       if (result instanceof Error) {
         return res.status(result.status).json({ msg: result.msg });
       }

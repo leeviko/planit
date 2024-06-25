@@ -7,7 +7,8 @@
     "build": "tsc",
     "migrate": "node-pg-migrate",
     "migrate:up": "yarn tsc && node dist/migrate.js",
-    "dev": "concurrently \"tsc -w\" \"nodemon ts dist/server.js\""
+    "dev2": "concurrently \"tsc -w\" \"nodemon -L -e ts dist/server.js\"",
+    "dev": "nodemon -L -e ts --exec \"tsc && node dist/server.js\""
   },
   "dependencies": {
     "connect-redis": "^7.1.1",
@@ -32,4 +33,4 @@
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5"
   }
-}
+} 

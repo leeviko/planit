@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-export type TUser = {
-  name: string;
+export type User = {
+  username: string;
   id: string;
   email: string;
   admin: boolean;
@@ -11,7 +11,7 @@ export type TUser = {
 export type AuthState = {
   isAuth: boolean;
   status: 'idle' | 'loading' | 'failed' | 'success';
-  user: TUser | null;
+  user: User | null;
 };
 
 const initialState: AuthState = {
@@ -24,14 +24,28 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setUser(state, action: { payload: TUser }) {
+    setUser(state, action: { payload: User }) {
       state.isAuth = true;
       state.status = 'success';
       state.user = action.payload;
     },
+    userLoading(state) {
+      state.status = 'loading';
+    },
+    logoutUser(state) {
+      state.isAuth = false;
+      state.status = 'idle';
+      state.user = null;
+    },
+    authFailed(state) {
+      state.isAuth = false;
+      state.status = 'failed';
+      state.user = null;
+    },
   },
 });
 
-export const { setUser } = authSlice.actions;
+export const { setUser, userLoading, logoutUser, authFailed } =
+  authSlice.actions;
 
 export default authSlice.reducer;
