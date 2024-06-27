@@ -69,6 +69,8 @@ export const apiSlice = createApi({
         url: `/boards/${id}`,
         credentials: 'include',
       }),
+      providesTags: (result) =>
+        result ? [{ type: 'Board', id: result.id }] : [],
     }),
     updateBoard: builder.mutation<Board, BoardUpdate>({
       query: ({ id, favorited, title }) => ({
@@ -80,7 +82,10 @@ export const apiSlice = createApi({
           favorited,
         },
       }),
-      invalidatesTags: ['Board'],
+      invalidatesTags: (_result, _error, { id }) => [
+        'Board',
+        { type: 'Board', id },
+      ],
     }),
   }),
 });

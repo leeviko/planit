@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 14.4
--- Dumped by pg_dump version 14.4
+-- Dumped from database version 14.7
+-- Dumped by pg_dump version 14.7
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -149,6 +149,8 @@ ALTER TABLE ONLY public.migrations ALTER COLUMN id SET DEFAULT nextval('public.m
 --
 
 COPY public.boards (id, user_id, slug, title, favorited, created_at, updated_at) FROM stdin;
+Zu163d5Cn3Ar3-nEjlmgE	ZAKHLHuGhUMOJM7Fwmpqs	console-snake	Console snake	f	2024-06-25 11:53:31.335099	2024-06-25 18:39:27.714577
+v5PRGXeB8dyLbrkYCKwYs	ZAKHLHuGhUMOJM7Fwmpqs	tetris	Tetris	t	2024-06-25 11:53:36.268017	2024-06-26 10:44:44.967735
 \.
 
 
@@ -157,6 +159,9 @@ COPY public.boards (id, user_id, slug, title, favorited, created_at, updated_at)
 --
 
 COPY public.cards (id, list_id, title, "position", created_at, updated_at) FROM stdin;
+x2qK_eMaM8sZO-aeHItbJ	ysXJ2nAU3330sa6NWV8oy	Sprites	0	2024-06-25 18:51:55.073641	2024-06-25 18:51:55.073641
+IQJCC39fzCiOIRFi9Vg4A	ysXJ2nAU3330sa6NWV8oy	Game loop	1	2024-06-26 10:51:13.633572	2024-06-26 10:51:13.633572
+jrUFt_-fr-TOLWrKs6zEr	ysXJ2nAU3330sa6NWV8oy	Rendering logic	2	2024-06-26 10:52:04.086058	2024-06-26 10:52:04.086058
 \.
 
 
@@ -165,6 +170,9 @@ COPY public.cards (id, list_id, title, "position", created_at, updated_at) FROM 
 --
 
 COPY public.lists (id, board_id, title, "position", created_at, updated_at) FROM stdin;
+k0B7swWD54G37x91LjgSl	v5PRGXeB8dyLbrkYCKwYs	Todo	0	2024-06-25 11:54:08.844671	2024-06-25 11:54:08.844671
+0sJDq5K350efYwk4z5mJB	v5PRGXeB8dyLbrkYCKwYs	Doing	1	2024-06-25 11:54:13.466802	2024-06-25 11:54:13.466802
+ysXJ2nAU3330sa6NWV8oy	v5PRGXeB8dyLbrkYCKwYs	Done	2	2024-06-25 11:54:18.110566	2024-06-25 11:54:18.110566
 \.
 
 

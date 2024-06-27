@@ -1,0 +1,10 @@
+.board-content {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.board-lists {
+  display: flex;
+  flex-wrap: wrap;
+}

@@ -34,14 +34,14 @@ export async function getBoard(user: UserResult, id: string) {
   const boardQuery = `
     SELECT 
       b.*, 
-      array_agg(row_to_json(l)) AS lists 
+      COALESCE(array_agg(row_to_json(l) ORDER BY l.position) FILTER (WHERE l IS NOT NULL), '{}') AS lists 
     FROM boards b
     LEFT JOIN (
-      SELECT list.*, array_agg(row_to_json(c)) AS cards 
+      SELECT list.*, COALESCE(array_agg(row_to_json(c) ORDER BY c.position) FILTER (WHERE c IS NOT NULL), '{}') AS cards 
       FROM lists list 
       LEFT JOIN cards c ON list.id = c.list_id GROUP BY list.id
     ) l 
-    ON b.id = l.board_id WHERE b.id = $1 OR b.slug = $1 AND b.user_id = $2
+    ON b.id = l.board_id WHERE (b.id = $1 OR b.slug = $1) AND b.user_id = $2
     GROUP BY b.id
   `;
 

@@ -1,0 +1,45 @@
+.list {
+  background-color: var(--list-bg);
+  min-width: 225px;
+  height: fit-content;
+  margin: 0 1rem;
+  font-size: 0.9rem;
+  border-radius: var(--border-radius);
+}
+
+.list-title {
+  border-top-right-radius: var(--border-radius);
+  border-top-left-radius: var(--border-radius);
+  padding: 0.75rem 1rem;
+  background-color: var(--list-header);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: grab;
+}
+
+.list-cards {
+  padding: 0.75rem 1rem;
+}
+
+.card {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+  background-color: var(--card-bg);
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+}
+
+.card-title {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.add-card-btn {
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  background: none;
+  border: none;
+  font: inherit;
+  color: rgba(255, 255, 255, 0.8);
+}

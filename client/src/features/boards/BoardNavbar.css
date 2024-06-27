@@ -1,0 +1,33 @@
+.board-navbar {
+  background-color: var(--grey);
+  height: 50px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 25px;
+}
+
+.board-navbar .board-info {
+  display: flex;
+  align-items: center;
+}
+
+.board-navbar h2 {
+  font-weight: 600;
+}
+
+.board-navbar .favorite-btn {
+  margin-left: 0.5rem;
+  display: flex;
+}
+
+.board-navbar .favorite-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.board-navbar .board-dropdown-btn {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
