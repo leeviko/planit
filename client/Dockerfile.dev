@@ -1,13 +1,12 @@
-FROM node:20
-
-ENV NODE_ENV development
+FROM node:20-alpine
 
 WORKDIR /app
+ENV NODE_ENV development
 
 COPY package*.json ./
 COPY yarn.lock ./
-
 RUN yarn
+
 COPY . .
 
 EXPOSE 5173
