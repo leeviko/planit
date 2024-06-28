@@ -1,22 +1,27 @@
 import CardItem from './Card';
 import { Card } from './boardsSlice';
 import './List.css';
-import { SortableContext, useSortable } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { useMemo } from 'react';
+import { CSSProperties, useEffect, useMemo, useState } from 'react';
 
 type Props = {
   id: string;
   board_id: string;
   title: string;
-  position: number;
   cards: Card[];
 };
 
-const List = ({ id, title, position, cards }: Props) => {
+const List = ({ id, title, cards }: Props) => {
   const cardIds = useMemo(() => cards.map((card) => card.id), [cards]);
+  const [originalHeight, setOriginalHeight] = useState<string | number>(0);
 
   const {
+    node,
     attributes,
     listeners,
     setNodeRef,
@@ -30,10 +35,22 @@ const List = ({ id, title, position, cards }: Props) => {
     },
   });
 
-  const style = {
+  const style: CSSProperties = {
     transition,
     transform: CSS.Transform.toString(transform),
   };
+
+  useEffect(() => {
+    if (!isDragging) {
+      setOriginalHeight(node.current?.clientHeight || 'auto');
+    }
+  }, [isDragging, node]);
+
+  if (isDragging) {
+    style.height = originalHeight;
+    style.opacity = 0.3;
+    return <div className="list drag" style={style} ref={setNodeRef}></div>;
+  }
 
   return (
     <div className="list" style={style} ref={setNodeRef}>
@@ -42,13 +59,15 @@ const List = ({ id, title, position, cards }: Props) => {
           {title}
         </h3>
         <div className="list-cards">
-          <SortableContext items={cardIds}>
+          <SortableContext
+            items={cardIds}
+            strategy={verticalListSortingStrategy}
+          >
             {cards.map((card) => (
               <CardItem
                 key={card.id}
                 list_id={id}
                 id={card.id}
-                position={card.position}
                 title={card.title}
               />
             ))}

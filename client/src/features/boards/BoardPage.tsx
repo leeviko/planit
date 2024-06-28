@@ -14,7 +14,12 @@ import {
   DragOverlay,
   DragStartEvent,
 } from '@dnd-kit/core';
-import { SortableContext, arrayMove } from '@dnd-kit/sortable';
+import {
+  SortableContext,
+  arrayMove,
+  horizontalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import Card from './Card';
 
 export type ActiveList = {
   id: string;
@@ -22,6 +27,7 @@ export type ActiveList = {
 export type ActiveCard = {
   id: string;
   list_id: string;
+  title: string;
 };
 
 const BoardPage = () => {
@@ -53,6 +59,7 @@ const BoardPage = () => {
       setActiveCard({
         // @ts-expect-error
         id: event.active.id,
+        title: event.active.data.current.title,
       });
       return;
     }
@@ -112,10 +119,12 @@ const BoardPage = () => {
     const activeCard = activeListCards[activeCardIndex];
 
     if (overType === 'card') {
-      // If the card is on another list
       if (activeCardListId !== overCardListId) {
         const overCardList = lists.find((list) => list.id === overCardListId);
         if (!overCardList) return;
+        const overCardIndex = overCardList.cards.findIndex(
+          (card) => card.id === overId
+        );
 
         const overListCards = overCardList.cards;
 
@@ -137,6 +146,12 @@ const BoardPage = () => {
           cards: [...overListCards, newActiveCard],
         };
 
+        newOverList.cards = arrayMove(
+          newOverList.cards,
+          newOverList.cards.length - 1,
+          overCardIndex
+        );
+
         setLists((prevLists) => {
           const newLists = prevLists.map((list) => {
             if (list.id === newActiveList.id) {
@@ -151,6 +166,7 @@ const BoardPage = () => {
           dispatch(setList(newLists));
           return newLists;
         });
+        return;
       }
 
       // If the card is in the same list
@@ -185,12 +201,11 @@ const BoardPage = () => {
     // Move card to another list
 
     if (activeCardListId === overId) return;
-
     // Get the over card's list and index
-    const overCardList = lists.find((list) => list.id === overId);
-    if (!overCardList) return;
+    const overList = lists.find((list) => list.id === overId);
+    if (!overList) return;
 
-    const overListCards = overCardList.cards;
+    const overListCards = overList.cards;
 
     const newActiveList = {
       ...activeCardList,
@@ -203,9 +218,15 @@ const BoardPage = () => {
     };
 
     const newOverList = {
-      ...overCardList,
+      ...overList,
       cards: [...overListCards, newActiveCard],
     };
+
+    newOverList.cards = arrayMove(
+      newOverList.cards,
+      newOverList.cards.length - 1,
+      0 // TODO: fix this..!
+    );
 
     setLists((prevLists) => {
       const newLists = prevLists.map((list) => {
@@ -241,14 +262,16 @@ const BoardPage = () => {
             onDragEnd={handleDragEnd}
             onDragOver={handleDragOver}
           >
-            <SortableContext items={listIds}>
+            <SortableContext
+              items={listIds}
+              strategy={horizontalListSortingStrategy}
+            >
               {lists.map((list) => (
                 <List
                   key={list.id}
                   id={list.id}
                   title={list.title}
                   cards={list.cards}
-                  position={list.position}
                   board_id={list.board_id}
                 />
               ))}
@@ -263,13 +286,18 @@ const BoardPage = () => {
                         id={list.id}
                         title={list.title}
                         cards={list.cards}
-                        position={list.position}
                         board_id={list.board_id}
                       />
                     )
                 )}
 
-              {activeCard && <h1>{activeCard.id}</h1>}
+              {activeCard && (
+                <Card
+                  id={activeCard.id}
+                  list_id={activeCard.list_id}
+                  title={activeCard.title}
+                />
+              )}
             </DragOverlay>
           </DndContext>
         </div>
