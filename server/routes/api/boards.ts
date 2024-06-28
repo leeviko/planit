@@ -128,11 +128,11 @@ router.get(
  * @desc   Delete board
  * @access Private
  */
-router.delete('/:boardId', auth, (req: Request, res: Response) => {
+router.delete('/:boardId', auth, async (req: Request, res: Response) => {
   const user = req.session.user!;
 
   try {
-    const result = deleteBoard(user, req.params.boardId);
+    const result = await deleteBoard(user, req.params.boardId);
     if (result instanceof Error) {
       return res.status(result.status).json({ msg: result.msg });
     }
