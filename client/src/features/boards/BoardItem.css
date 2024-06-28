@@ -1,5 +1,5 @@
 .board-item {
-  background-color: var(--accent-010);
+  background-color: var(--accent-dark-010);
   width: 250px;
   height: 125px;
   padding: 0.75rem 1.25rem;
@@ -15,4 +15,17 @@
 .favorite-btn {
   background: none;
   border: none;
+}
+
+.new.board-item {
+  transition: background-color 100ms ease-in-out;
+  border: none;
+  font: inherit;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.new.board-item:hover {
+  background-color: var(--accent-dark-020);
 }
