@@ -4,6 +4,7 @@ import FavoriteFilled from '../../assets/favorite_filled.svg';
 import { useUpdateBoardMutation } from '../api/apiSlice';
 import './BoardItem.css';
 import 'react-loading-skeleton/dist/skeleton.css';
+import { Link } from 'react-router-dom';
 
 type Props = {
   skeleton?: boolean;
@@ -51,7 +52,9 @@ const BoardItem = ({ title, favorited, slug, id }: Props) => {
 
   return (
     <div className="board-item">
-      <h3>{title}</h3>
+      <Link to={`/boards/${slug}`}>
+        <h3>{title}</h3>
+      </Link>
       <button className="favorite-btn" onClick={handleFavorite}>
         <img src={favorited ? FavoriteFilled : Favorite} alt="" />
       </button>

@@ -1,0 +1,39 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+}
+
+.form-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+  background-color: var(--bg);
+
+  padding: 2rem 3rem;
+  border-radius: var(--border-radius);
+  height: 30%;
+  width: 40%;
+  max-width: 300px;
+  min-width: 250px;
+}
+
+.form-modal h3 {
+  text-align: center;
+  margin: 0 0rem 0.5rem 0;
+  font-size: 1.4rem;
+}
+
+.form-modal form {
+  padding: 0;
+}
+
+.form-modal form button {
+  height: 30px;
+}

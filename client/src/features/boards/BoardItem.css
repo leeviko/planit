@@ -7,6 +7,10 @@
   margin-top: 1rem;
 }
 
+.board-item a {
+  color: rgba(255, 255, 255, 0.8);
+}
+
 .board-item h3 {
   font-size: 0.9rem;
   font-weight: 500;

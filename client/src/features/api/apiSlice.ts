@@ -19,6 +19,10 @@ type BoardUpdate = {
   favorited?: boolean;
 };
 
+type NewBoardRequest = {
+  name: string;
+};
+
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
@@ -72,6 +76,17 @@ export const apiSlice = createApi({
       providesTags: (result) =>
         result ? [{ type: 'Board', id: result.id }] : [],
     }),
+    createBoard: builder.mutation<Board, NewBoardRequest>({
+      query: ({ name }) => ({
+        url: '/boards',
+        method: 'POST',
+        credentials: 'include',
+        body: {
+          title: name,
+        },
+      }),
+      invalidatesTags: ['Board'],
+    }),
     updateBoard: builder.mutation<Board, BoardUpdate>({
       query: ({ id, favorited, title }) => ({
         url: `/boards/${id}`,
@@ -98,5 +113,6 @@ export const {
 
   useGetBoardsQuery,
   useGetBoardQuery,
+  useCreateBoardMutation,
   useUpdateBoardMutation,
 } = apiSlice;

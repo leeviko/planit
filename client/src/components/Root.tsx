@@ -3,6 +3,7 @@ import AuthNavbar from '../features/ui/AuthNavbar';
 import Navbar from '../features/ui/Navbar';
 import { Outlet } from 'react-router-dom';
 import Toast from '../features/ui/Toast';
+import FormModal from '../features/ui/FormModal';
 
 const Root = () => {
   const { isAuth, isLoading } = useAuth();
@@ -10,6 +11,7 @@ const Root = () => {
   return (
     <>
       <Toast />
+      <FormModal />
       {!isLoading && (isAuth ? <AuthNavbar /> : <Navbar />)}
       <Outlet />
     </>
