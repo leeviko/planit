@@ -8,7 +8,7 @@ import {
   List,
   NewBoard,
 } from '../routes/api/boards';
-import { slug } from '../utils';
+import { arrayMove, slug } from '../utils';
 import { nanoid } from 'nanoid';
 import { Error } from '../server';
 
@@ -285,7 +285,71 @@ export async function updateList(
   boardId: string,
   listId: string,
   updateValues: ListUpdate
-) {}
+) {
+  const { title, pos } = updateValues;
+  const list = await getListBy('id', listId);
+  const board = await getBoardBy('id', boardId);
+  if (!list || list.board_id !== boardId || !board || board.user_id !== user.id)
+    return new Error({ status: 404, msg: 'List not found' });
+
+  if (pos !== undefined) {
+    const boardLists = await getBoardLists(boardId);
+    if (!boardLists) return new Error({ status: 404, msg: 'List not found' });
+    const oldListIndex = boardLists.findIndex((list) => list.id === listId);
+    const newListIndex = pos;
+
+    const newLists = arrayMove(boardLists, oldListIndex, newListIndex);
+
+    try {
+      await moveLists(newLists);
+    } catch (err) {
+      console.log(err);
+      return new Error({
+        status: 400,
+        msg: 'Something went wrong. Please try again later.',
+      });
+    }
+  }
+
+  if (title) {
+    const updateListQuery = 'UPDATE lists SET title = $1 WHERE id = $2';
+
+    try {
+      await query(updateListQuery, [title, listId]);
+    } catch (err) {
+      console.log(err);
+      return new Error({
+        status: 400,
+        msg: 'Something went wrong. Please try again later.',
+      });
+    }
+  }
+
+  return { ok: true };
+}
+
+async function moveLists(lists: List[]) {
+  let updateQuery = 'UPDATE lists SET position = CASE';
+
+  lists.forEach((list, index) => {
+    updateQuery += ` WHEN id = '${list.id}' THEN ${index}`;
+  });
+
+  updateQuery += ' END WHERE id IN (';
+  updateQuery += lists.map((list) => `'${list.id}'`).join(', ');
+  updateQuery += ');';
+
+  try {
+    const response = await query(updateQuery);
+    return response.rows;
+  } catch (err) {
+    console.log(err);
+    throw new Error({
+      status: 400,
+      msg: 'Something went wrong. Please try again later.',
+    });
+  }
+}
 
 /**
  * Delete list
@@ -320,16 +384,35 @@ export async function getListBy(
     return result.rows[0] as List;
   }
 
+  // TODO: Fix this
   const listQuery = `
     SELECT l.* FROM lists AS l 
-      INNER JOIN users ON l.user_id = users.id 
-    WHERE l.${key} = $1 LIMIT 1`;
+      INNER JOIN users ON l.user_id = $1 
+    WHERE l.${key} = $2 LIMIT 1`;
 
   try {
-    const result = await query(listQuery, [value]);
+    const result = await query(listQuery, [userId, value]);
     return result.rows[0] as List;
   } catch (err) {
     console.log(err);
+  }
+}
+
+/**
+ * Get all board lists
+ * @param boardId - The board id
+ * @param userId - The user id
+ * @returns The lists
+ */
+export async function getBoardLists(boardId: string) {
+  const listsQuery = `SELECT * FROM lists WHERE board_id = $1`;
+
+  try {
+    const result = await query(listsQuery, [boardId]);
+    return result.rows as List[];
+  } catch (err) {
+    console.log(err);
+    return false;
   }
 }
 

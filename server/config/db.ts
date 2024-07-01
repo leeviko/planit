@@ -12,6 +12,10 @@ const pool = new Pool({
   port: 5432,
 });
 
-export const query = async (text: string, params: any[]) => {
+export const query = async (text: string, params?: any[]) => {
+  if (!params) {
+    return await pool.query(text);
+  }
+
   return await pool.query(text, params);
 };

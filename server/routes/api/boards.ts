@@ -309,7 +309,7 @@ router.put(
     const listId = req.params.listId;
     const { title, pos } = req.body;
 
-    if (!title && !pos) {
+    if (!title && pos === undefined) {
       return res.status(400).json({ msg: 'No fields to update.' });
     }
 
@@ -318,9 +318,9 @@ router.put(
     try {
       const result = await updateList(user, boardId, listId, updateValues);
 
-      // if (result instanceof Error) {
-      //   return res.status(result.status).json({ msg: result.msg });
-      // }
+      if (result instanceof Error) {
+        return res.status(result.status).json({ msg: result.msg });
+      }
       res.json(result);
     } catch (err) {
       console.log(err);
