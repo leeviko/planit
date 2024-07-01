@@ -1,10 +1,16 @@
+.board-page {
+  overflow-y: hidden;
+}
+
 .board-content {
+  height: calc(100vh - 80px - 50px - 2rem);
   margin-top: 2rem;
   display: flex;
   justify-content: center;
+  overflow-x: scroll;
 }
 
 .board-lists {
+  width: 100%;
   display: flex;
-  flex-wrap: wrap;
 }

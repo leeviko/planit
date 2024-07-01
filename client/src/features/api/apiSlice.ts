@@ -1,14 +1,14 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Board } from '../boards/boardsSlice';
+import { Board, List } from '../boards/boardsSlice';
 import { User } from '../auth/authSlice';
 
-type RegisterRequest = {
+type Register = {
   email: string;
   username: string;
   password: string;
 };
 
-type LoginRequest = {
+type Login = {
   username: string;
   password: string;
 };
@@ -19,8 +19,15 @@ type BoardUpdate = {
   favorited?: boolean;
 };
 
-type NewBoardRequest = {
+type NewBoard = {
   name: string;
+};
+
+type ListUpdate = {
+  boardId: string;
+  listId: string;
+  title?: string;
+  pos?: number;
 };
 
 export const apiSlice = createApi({
@@ -28,7 +35,7 @@ export const apiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
   tagTypes: ['User', 'Board'],
   endpoints: (builder) => ({
-    register: builder.mutation<User, RegisterRequest>({
+    register: builder.mutation<User, Register>({
       query: (body) => ({
         url: '/users',
         method: 'POST',
@@ -36,7 +43,7 @@ export const apiSlice = createApi({
         body,
       }),
     }),
-    login: builder.mutation<User, LoginRequest>({
+    login: builder.mutation<User, Login>({
       query: (body) => ({
         url: '/auth',
         method: 'POST',
@@ -76,7 +83,7 @@ export const apiSlice = createApi({
       providesTags: (result) =>
         result ? [{ type: 'Board', id: result.id }] : [],
     }),
-    createBoard: builder.mutation<Board, NewBoardRequest>({
+    createBoard: builder.mutation<Board, NewBoard>({
       query: ({ name }) => ({
         url: '/boards',
         method: 'POST',
@@ -102,6 +109,34 @@ export const apiSlice = createApi({
         { type: 'Board', id },
       ],
     }),
+
+    createList: builder.mutation<List, { boardId: string; title: string }>({
+      query: ({ boardId, title }) => ({
+        url: `/boards/${boardId}/lists`,
+        method: 'POST',
+        credentials: 'include',
+        body: {
+          title,
+        },
+      }),
+      invalidatesTags: (_result, _error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
+    updateList: builder.mutation<{ ok: boolean }, ListUpdate>({
+      query: ({ boardId, listId, title, pos }) => ({
+        url: `/boards/${boardId}/lists/${listId}`,
+        method: 'PUT',
+        credentials: 'include',
+        body: {
+          title,
+          pos,
+        },
+      }),
+      invalidatesTags: (_result, _error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
   }),
 });
 
@@ -115,4 +150,7 @@ export const {
   useGetBoardQuery,
   useCreateBoardMutation,
   useUpdateBoardMutation,
+
+  useCreateListMutation,
+  useUpdateListMutation,
 } = apiSlice;

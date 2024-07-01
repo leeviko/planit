@@ -43,3 +43,30 @@
   font: inherit;
   color: rgba(255, 255, 255, 0.8);
 }
+
+.add-list-btn {
+  font: inherit;
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius);
+  background-color: var(--list-bg);
+  min-width: 225px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  height: 3rem;
+  margin-left: 1rem;
+}
+
+.add-list-btn input {
+  background: none;
+  border: 2px solid hsla(0, 0%, 75%, 0.2);
+  padding: 0.3rem 0.5rem;
+  color: white;
+  font-family: inherit;
+  border-radius: var(--border-radius);
+}
+
+.add-list-btn:hover {
+  background-color: var(--list-header);
+}

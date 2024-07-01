@@ -35,13 +35,17 @@ const BoardNavbar = ({ isLoading, title, favorited, id }: Props) => {
           )}
         </h2>
 
-        <button className="favorite-btn" onClick={handleFavorite}>
-          <img src={favorited ? FavoriteFilled : Favorite} alt="" />
-        </button>
+        {!isLoading && title && (
+          <button className="favorite-btn" onClick={handleFavorite}>
+            <img src={favorited ? FavoriteFilled : Favorite} alt="" />
+          </button>
+        )}
       </div>
-      <button className="board-dropdown-btn">
-        <img src={More} alt="" />
-      </button>
+      {!isLoading && title && (
+        <button className="board-dropdown-btn">
+          <img src={More} alt="" />
+        </button>
+      )}
     </div>
   );
 };
