@@ -7,23 +7,23 @@
 - [x] 🔐 Authentication
   - [x] Register
   - [x] Login
-  - [ ] Logout
+  - [x] Logout
   - [ ] Remember me
 - [ ] 🖼️ Boards
-  - [ ] Create board
+  - [x] Create board
   - [ ] Edit board
   - [x] Favorite board
   - [ ] Delete board
   - [ ] 📃 Lists
-    - [ ] Create a list
+    - [x] Create a list
     - [ ] Edit list
     - [ ] Delete list
     - [ ] Cards
       - [ ] Create card
       - [ ] Edit card
       - [ ] Delete card
-  - [ ] 🫳 Drag and drop
-    - [ ] Move lists
+  - [x] 🫳 Drag and drop
+    - [x] Move lists
     - [ ] Move cards
 - [ ] Board activity page
 - [ ] Manage account page
