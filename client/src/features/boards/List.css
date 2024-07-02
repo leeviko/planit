@@ -58,7 +58,8 @@
   margin-left: 1rem;
 }
 
-.add-list-btn input {
+.add-list-btn input,
+.add-card-btn input {
   background: none;
   border: 2px solid hsla(0, 0%, 75%, 0.2);
   padding: 0.3rem 0.5rem;

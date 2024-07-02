@@ -38,7 +38,7 @@ const BoardPageLists = ({ board }: Props) => {
   const [activeCard, setActiveCard] = useState<ActiveCard | null>(null);
   const [showAddInput, setShowAddInput] = useState(false);
   const [newListName, setNewListName] = useState('');
-  const [addList] = useCreateListMutation();
+  const [createList] = useCreateListMutation();
   const [updateList] = useUpdateListMutation();
   const dispatch = useDispatch();
 
@@ -263,8 +263,7 @@ const BoardPageLists = ({ board }: Props) => {
   const handleAddList = async () => {
     if (!newListName) return;
     try {
-      const response = await addList({ boardId: board.id, title: newListName });
-      console.log(response);
+      await createList({ boardId: board.id, title: newListName });
     } catch (err) {
       console.log(err);
     }

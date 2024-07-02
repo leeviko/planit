@@ -6,6 +6,7 @@ import { setBoard } from './boardsSlice';
 import { useEffect } from 'react';
 import BoardPageLists from './BoardPageLists';
 import './BoardPage.css';
+import authRoute from '../auth/AuthRoute';
 
 const BoardPage = () => {
   const { id } = useParams();
@@ -36,4 +37,6 @@ const BoardPage = () => {
   );
 };
 
-export default BoardPage;
+const WrappedBoardPage = authRoute(BoardPage, '/login');
+
+export default WrappedBoardPage;

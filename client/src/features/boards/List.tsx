@@ -8,6 +8,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { useCreateCardMutation } from '../api/apiSlice';
 
 type Props = {
   id: string;
@@ -16,9 +17,12 @@ type Props = {
   cards: Card[];
 };
 
-const List = ({ id, title, cards }: Props) => {
+const List = ({ board_id, id, title, cards }: Props) => {
   const cardIds = useMemo(() => cards.map((card) => card.id), [cards]);
   const [originalHeight, setOriginalHeight] = useState<string | number>(0);
+  const [newCardName, setNewCardName] = useState('');
+  const [showAddInput, setShowAddInput] = useState(false);
+  const [createCard] = useCreateCardMutation();
 
   const {
     node,
@@ -52,6 +56,18 @@ const List = ({ id, title, cards }: Props) => {
     return <div className="list drag" style={style} ref={setNodeRef}></div>;
   }
 
+  const handleAddCard = async () => {
+    if (!newCardName) return;
+
+    try {
+      await createCard({ boardId: board_id, listId: id, title: newCardName });
+    } catch (err) {
+      console.log(err);
+    }
+
+    setNewCardName('');
+  };
+
   return (
     <div className="list" style={style} ref={setNodeRef}>
       <div className="list-content">
@@ -72,7 +88,26 @@ const List = ({ id, title, cards }: Props) => {
               />
             ))}
           </SortableContext>
-          <button className="add-card-btn">+ Add card</button>
+          <button
+            className="add-card-btn"
+            onClick={() => setShowAddInput(true)}
+          >
+            {showAddInput && (
+              <input
+                type="text"
+                value={newCardName}
+                onChange={(e) => setNewCardName(e.target.value)}
+                placeholder="Name..."
+                autoFocus
+                onBlur={() => {
+                  setNewCardName('');
+                  setShowAddInput(false);
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddCard()}
+              />
+            )}
+            {!showAddInput && <>+ Add Card</>}
+          </button>
         </div>
       </div>
     </div>

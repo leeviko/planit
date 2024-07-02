@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Board, List } from '../boards/boardsSlice';
+import { Board, Card, List } from '../boards/boardsSlice';
 import { User } from '../auth/authSlice';
 
 export type ValidationErrors<T> = Record<keyof T, { msg: string }>;
@@ -30,6 +30,12 @@ type ListUpdate = {
   listId: string;
   title?: string;
   pos?: number;
+};
+
+type NewCard = {
+  boardId: string;
+  listId: string;
+  title: string;
 };
 
 export const apiSlice = createApi({
@@ -139,6 +145,21 @@ export const apiSlice = createApi({
         { type: 'Board', id: boardId },
       ],
     }),
+
+    createCard: builder.mutation<Card, NewCard>({
+      query: ({ boardId, listId, title }) => ({
+        url: `/boards/${boardId}/cards/`,
+        method: 'POST',
+        credentials: 'include',
+        body: {
+          title,
+          listId,
+        },
+      }),
+      invalidatesTags: (_result, _error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
   }),
 });
 
@@ -155,4 +176,6 @@ export const {
 
   useCreateListMutation,
   useUpdateListMutation,
+
+  useCreateCardMutation,
 } = apiSlice;
