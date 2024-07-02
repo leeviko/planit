@@ -7,10 +7,11 @@ import {
   Card,
   List,
   NewBoard,
+  BoardWithLists,
 } from '../routes/api/boards';
 import { arrayMove, slug } from '../utils';
 import { nanoid } from 'nanoid';
-import { Error } from '../server';
+import { ServerError } from '../server';
 
 /**
  * Get board by id or slug
@@ -24,13 +25,21 @@ export async function getBoardBy(key: 'id' | 'slug', value: string) {
   return result.rows[0] as Board;
 }
 
+type GetBoardSuccess = {
+  ok: true;
+  data: BoardWithLists;
+};
+
 /**
  * Get board with lists by id or slug
  * @param user - The user performing the action
  * @param id - The ID or slug of the board
  * @returns The board or an error
  */
-export async function getBoard(user: UserResult, id: string) {
+export async function getBoard(
+  user: UserResult,
+  id: string
+): Promise<GetBoardSuccess | ServerError> {
   const boardQuery = `
     SELECT 
       b.*, 
@@ -47,22 +56,30 @@ export async function getBoard(user: UserResult, id: string) {
 
   try {
     const result = await query(boardQuery, [id, user.id]);
-    return result.rows[0];
+    return { ok: true, data: result.rows[0] };
   } catch (err) {
     console.log(err);
-    return new Error({
+    return {
+      ok: false,
       status: 400,
       msg: 'Failed to retrieve board. Please try again later.',
-    });
+    };
   }
 }
+
+type GetBoardsSuccess = {
+  ok: true;
+  data: BoardWithLists[];
+};
 
 /**
  * Retrieves all user's boards with their associated lists.
  * @param user - The user performing the action.
  * @returns An error or an array of board objects with their associated lists.
  */
-export async function getBoards(user: UserResult) {
+export async function getBoards(
+  user: UserResult
+): Promise<GetBoardsSuccess | ServerError> {
   const boardQuery = `
     SELECT 
       b.*, 
@@ -79,15 +96,21 @@ export async function getBoards(user: UserResult) {
 
   try {
     const result = await query(boardQuery, [user.id]);
-    return result.rows;
+    return { ok: true, data: result.rows };
   } catch (err) {
     console.log(err);
-    return new Error({
+    return {
+      ok: false,
       status: 400,
       msg: 'Something went wrong. Please try again later.',
-    });
+    };
   }
 }
+
+type CreateBoardSuccess = {
+  ok: true;
+  data: Board;
+};
 
 /**
  * Creates a new board.
@@ -95,7 +118,10 @@ export async function getBoards(user: UserResult) {
  * @param title - The title of the board.
  * @returns An error or the new board.
  */
-export async function createBoard(user: UserResult, title: string) {
+export async function createBoard(
+  user: UserResult,
+  title: string
+): Promise<CreateBoardSuccess | ServerError> {
   const newBoard: NewBoard = {
     id: nanoid(),
     user_id: user.id,
@@ -116,21 +142,25 @@ export async function createBoard(user: UserResult, title: string) {
       newBoard.slug,
       newBoard.title,
     ]);
-    return result.rows;
+    return { ok: true, data: result.rows[0] };
   } catch (err: any) {
     console.log(err);
     if (err.code === ErrorCode.DUPLICATE) {
-      return new Error({
+      return {
+        ok: false,
         status: 400,
         msg: 'Title already in use',
-      });
+      };
     }
-    return new Error({
+    return {
+      ok: false,
       status: 400,
       msg: 'Failed to create board. Please try again later.',
-    });
+    };
   }
 }
+
+type UpdateBoardSuccess = CreateBoardSuccess;
 
 /**
  * Updates a board with the provided data.
@@ -143,7 +173,7 @@ export async function updateBoard(
   user: UserSession,
   boardId: string,
   updateData: BoardUpdate
-) {
+): Promise<UpdateBoardSuccess | ServerError> {
   const keys = Object.keys(updateData).filter(
     (key) => updateData[key] !== undefined && updateData[key] !== ''
   );
@@ -165,13 +195,14 @@ export async function updateBoard(
       boardId,
       user.id,
     ]);
-    return result.rows;
+    return { ok: true, data: result.rows[0] };
   } catch (err) {
     console.log(err);
-    return new Error({
+    return {
+      ok: false,
       status: 400,
       msg: 'Failed to update board. Please try again later.',
-    });
+    };
   }
 }
 
@@ -181,26 +212,37 @@ export async function updateBoard(
  * @param boardId - The ID of the board
  * @returns An error or the number of rows deleted
  */
-export async function deleteBoard(user: UserResult, boardId: string) {
-  const board = await getBoardBy('id', boardId);
-
-  if (!board) return new Error({ status: 404, msg: 'Board not found' });
-  if (board.user_id !== user.id)
-    return new Error({ status: 404, msg: 'Board not found' });
-
-  const deleteBoardQuery = 'DELETE FROM boards WHERE id = $1';
+export async function deleteBoard(
+  user: UserResult,
+  boardId: string
+): Promise<{ ok: true } | ServerError> {
+  const deleteBoardQuery = 'DELETE FROM boards WHERE id = $1 AND user_id = $2;';
 
   try {
-    const result = await query(deleteBoardQuery, [boardId]);
-    return result.rowCount;
+    const result = await query(deleteBoardQuery, [boardId, user.id]);
+    if (result.rowCount === 0) {
+      return {
+        ok: false,
+        status: 404,
+        msg: 'Board not found',
+      };
+    }
+
+    return { ok: true };
   } catch (err) {
     console.log(err);
-    return new Error({
+    return {
+      ok: false,
       status: 400,
       msg: 'Failed to delete board. Please try again later.',
-    });
+    };
   }
 }
+
+type CreateListSuccess = {
+  ok: true;
+  data: List;
+};
 
 /**
  * Add list to a board
@@ -209,43 +251,42 @@ export async function deleteBoard(user: UserResult, boardId: string) {
  * @param title - The title of the list
  * @returns An error or the new list
  */
-export async function addList(
+export async function createList(
   user: UserResult,
   boardId: string,
   title: string
-) {
-  let board;
+): Promise<CreateListSuccess | ServerError> {
   try {
-    board = await getBoardBy('id', boardId);
+    const board = await getBoardBy('id', boardId);
+    if (!board || board.user_id !== user.id)
+      return { ok: false, status: 404, msg: 'Board not found' };
   } catch (err) {
-    return new Error({
+    return {
+      ok: false,
       status: 400,
       msg: 'Something went wrong. Please try again later.',
-    });
+    };
   }
-
-  if (!board) return new Error({ status: 400, msg: 'Invalid values' });
-  if (board.user_id !== user.id)
-    return new Error({ status: 400, msg: 'Invalid values' });
 
   const boardListsQuery = 'SELECT board_id FROM lists WHERE board_id = $1';
-  let boardLists;
-
-  try {
-    boardLists = await query(boardListsQuery, [boardId]);
-  } catch (err) {
-    return new Error({
-      status: 400,
-      msg: 'Something went wrong. Please try again later.',
-    });
-  }
 
   const newList = {
     id: nanoid(),
     boardId,
     title,
-    position: boardLists.rows.length,
+    position: 0,
   };
+
+  try {
+    const boardLists = await query(boardListsQuery, [boardId]);
+    newList.position = boardLists.rows.length;
+  } catch (err) {
+    return {
+      ok: false,
+      status: 400,
+      msg: 'Something went wrong. Please try again later.',
+    };
+  }
 
   const listQuery = `
     INSERT INTO lists (id, board_id, title, position)
@@ -260,18 +301,20 @@ export async function addList(
       newList.title,
       newList.position,
     ]);
-    return result.rows;
+    return { ok: true, data: result.rows[0] };
   } catch (err: any) {
     console.log(err);
     if (err.code === ErrorCode.DUPLICATE) {
-      return new Error({ status: 400, msg: 'Title already in use' });
+      return { ok: false, status: 400, msg: 'Title already in use' };
     }
-    return new Error({
+    return {
+      ok: false,
       status: 400,
       msg: 'Failed to create list. Please try again later.',
-    });
+    };
   }
 }
+
 /**
  * Update list
  * @param user - The user performing the action
@@ -285,16 +328,21 @@ export async function updateList(
   boardId: string,
   listId: string,
   updateValues: ListUpdate
-) {
+): Promise<{ ok: true } | ServerError> {
   const { title, pos } = updateValues;
   const list = await getListBy('id', listId);
   const board = await getBoardBy('id', boardId);
-  if (!list || list.board_id !== boardId || !board || board.user_id !== user.id)
-    return new Error({ status: 404, msg: 'List not found' });
 
-  if (pos !== undefined) {
+  if (!list || list.board_id !== boardId || !board || board.user_id !== user.id)
+    return { ok: false, status: 404, msg: 'List not found' };
+
+  if (pos !== undefined && pos !== list.position) {
     const boardLists = await getBoardLists(boardId);
-    if (!boardLists) return new Error({ status: 404, msg: 'List not found' });
+    if (!boardLists) return { ok: false, status: 404, msg: 'List not found' };
+
+    if (pos < 0 || pos > boardLists.length)
+      return { ok: false, status: 400, msg: 'Invalid position' };
+
     const oldListIndex = boardLists.findIndex((list) => list.id === listId);
     const newListIndex = pos;
 
@@ -304,10 +352,11 @@ export async function updateList(
       await moveLists(newLists);
     } catch (err) {
       console.log(err);
-      return new Error({
-        status: 400,
-        msg: 'Something went wrong. Please try again later.',
-      });
+      return {
+        ok: false,
+        status: 500,
+        msg: 'Failed to update list position. Please try again later.',
+      };
     }
   }
 
@@ -318,10 +367,11 @@ export async function updateList(
       await query(updateListQuery, [title, listId]);
     } catch (err) {
       console.log(err);
-      return new Error({
-        status: 400,
-        msg: 'Something went wrong. Please try again later.',
-      });
+      return {
+        ok: false,
+        status: 500,
+        msg: 'Failed to update title. Please try again later.',
+      };
     }
   }
 
@@ -344,10 +394,11 @@ async function moveLists(lists: List[]) {
     return response.rows;
   } catch (err) {
     console.log(err);
-    throw new Error({
-      status: 400,
+    throw {
+      ok: false,
+      status: 500,
       msg: 'Something went wrong. Please try again later.',
-    });
+    };
   }
 }
 
@@ -357,12 +408,30 @@ async function moveLists(lists: List[]) {
  * @param listId - The ID of the list
  * @returns An error
  */
-export async function deleteList(user: UserResult, listId: string) {
-  const list = await getListBy('id', listId, true, user.id);
-  if (!list) return new Error({ status: 404, msg: 'List not found' });
+export async function deleteList(
+  user: UserResult,
+  listId: string,
+  boardId: string
+) {
+  const board = await getBoardBy('id', boardId);
+  if (!board || board.user_id !== user.id)
+    return { ok: false, status: 404, msg: 'List not found' };
 
-  if (list.board_id !== user.id) {
-    return new Error({ status: 404, msg: 'List not found' });
+  const deleteListQuery = 'DELETE FROM lists WHERE id = $1;';
+
+  try {
+    const result = await query(deleteListQuery, [listId]);
+    if (result.rowCount === 0)
+      return { ok: false, status: 404, msg: 'List not found' };
+
+    return { ok: true };
+  } catch (err) {
+    console.log(err);
+    return {
+      ok: false,
+      status: 500,
+      msg: 'Failed to delete list. Please try again later.',
+    };
   }
 }
 
@@ -395,13 +464,14 @@ export async function getListBy(
     return result.rows[0] as List;
   } catch (err) {
     console.log(err);
+
+    return false;
   }
 }
 
 /**
  * Get all board lists
  * @param boardId - The board id
- * @param userId - The user id
  * @returns The lists
  */
 export async function getBoardLists(boardId: string) {
@@ -416,10 +486,15 @@ export async function getBoardLists(boardId: string) {
   }
 }
 
-type CardReq = {
+type NewCard = {
   boardId: string;
   listId: string;
   title: string;
+};
+
+type CreateCardSuccess = {
+  ok: true;
+  data: Card;
 };
 
 /**
@@ -428,39 +503,40 @@ type CardReq = {
  * @param values - contains the board and list ids and the card title
  * @returns An error or the new card
  */
-export async function addCard(user: UserResult, values: CardReq) {
+export async function createCard(
+  user: UserResult,
+  values: NewCard
+): Promise<CreateCardSuccess | ServerError> {
   const { boardId, listId, title } = values;
 
   const list = await getListBy('id', listId);
-  if (!list) return new Error({ status: 400, msg: 'Invalid values' });
-
-  if (list.board_id !== boardId)
-    return new Error({ status: 400, msg: 'Invalid values' });
+  if (!list || list.board_id !== boardId)
+    return { ok: false, status: 400, msg: 'Invalid values' };
 
   const board = await getBoardBy('id', list.board_id);
 
-  if (!board) return new Error({ status: 400, msg: 'Invalid values' });
-  if (board.user_id !== user.id)
-    return new Error({ status: 400, msg: 'Invalid values' });
+  if (!board || board.user_id !== user.id)
+    return { ok: false, status: 400, msg: 'Invalid values' };
 
   const cardsQuery = 'SELECT list_id FROM cards WHERE list_id = $1';
-  let listCards;
-
-  try {
-    listCards = await query(cardsQuery, [listId]);
-  } catch (err) {
-    return new Error({
-      status: 400,
-      msg: 'Something went wrong. Please try again later.',
-    });
-  }
 
   const newCard = {
     id: nanoid(),
     listId,
     title,
-    position: listCards.rows.length,
+    position: 0,
   };
+
+  try {
+    const listCards = await query(cardsQuery, [listId]);
+    newCard.position = listCards.rows.length;
+  } catch (err) {
+    return {
+      ok: false,
+      status: 500,
+      msg: 'Something went wrong. Please try again later.',
+    };
+  }
 
   const cardQuery = `
     INSERT INTO cards (id, list_id, title, position)
@@ -475,12 +551,13 @@ export async function addCard(user: UserResult, values: CardReq) {
       newCard.title,
       newCard.position,
     ]);
-    return result.rows;
+    return { ok: true, data: result.rows[0] };
   } catch (err: any) {
     console.log(err);
-    return new Error({
-      status: 400,
+    return {
+      ok: false,
+      status: 500,
       msg: 'Failed to create card. Please try again later.',
-    });
+    };
   }
 }

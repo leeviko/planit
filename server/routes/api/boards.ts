@@ -3,8 +3,8 @@ import { auth } from '../../middleware/auth';
 import { validationRes } from '../../middleware/validationRes';
 import { body, param } from 'express-validator';
 import {
-  addCard,
-  addList,
+  createCard,
+  createList,
   createBoard,
   deleteBoard,
   getBoard,
@@ -13,7 +13,6 @@ import {
   updateBoard,
   updateList,
 } from '../../controllers/boards';
-import { Error } from '../../server';
 
 const router: Router = express.Router();
 
@@ -81,7 +80,10 @@ router.get('/', auth, async (req: Request, res: Response) => {
 
   try {
     const result = await getBoards(user);
-    res.json(result);
+    if (!result.ok) {
+      return res.status(result.status).json({ msg: result.msg });
+    }
+    res.json(result.data);
   } catch (err) {
     console.log(err);
     res
@@ -105,15 +107,15 @@ router.get(
 
     try {
       const result = await getBoard(user, req.params.id);
-      if (result instanceof Error) {
+      if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
 
-      if (!result) {
+      if (!result.data) {
         return res.status(404).json({ msg: 'Board not found' });
       }
 
-      res.json(result);
+      res.json(result.data);
     } catch (err) {
       console.log(err);
       res
@@ -133,10 +135,10 @@ router.delete('/:boardId', auth, async (req: Request, res: Response) => {
 
   try {
     const result = await deleteBoard(user, req.params.boardId);
-    if (result instanceof Error) {
+    if (!result.ok) {
       return res.status(result.status).json({ msg: result.msg });
     }
-    res.json({ msg: 'Board deleted successfully' });
+    res.json({ msg: 'Board deleted.' });
   } catch (err) {
     console.log(err);
     res
@@ -161,10 +163,10 @@ router.post(
 
     try {
       const result = await createBoard(user, title);
-      if (result instanceof Error) {
+      if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
-      res.json(result);
+      res.json({ result: result.data });
     } catch (err) {
       console.log(err);
       res
@@ -209,15 +211,15 @@ router.put(
 
     try {
       const result = await updateBoard(user, boardId, updateValues);
-      if (result instanceof Error) {
+      if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
 
-      if (result.length === 0) {
+      if (!result.data) {
         return res.status(404).json({ msg: 'Board not found.' });
       }
 
-      res.json({ board: { ...result[0] }, msg: 'Board updated.' });
+      res.json({ result: result.data });
     } catch (err: any) {
       console.log(err);
       res
@@ -245,11 +247,11 @@ router.post(
     const user = req.session.user!;
 
     try {
-      const result = await addList(user, boardId, req.body.title);
-      if (result instanceof Error) {
+      const result = await createList(user, boardId, req.body.title);
+      if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
-      res.json(result);
+      res.json({ result: result.data });
     } catch (err) {
       console.log(err);
       res
@@ -318,10 +320,10 @@ router.put(
     try {
       const result = await updateList(user, boardId, listId, updateValues);
 
-      if (result instanceof Error) {
+      if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
-      res.json(result);
+      res.json({ result });
     } catch (err) {
       console.log(err);
       res
@@ -356,11 +358,11 @@ router.post(
     };
 
     try {
-      const result = await addCard(user, values);
-      if (result instanceof Error) {
+      const result = await createCard(user, values);
+      if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
-      res.json(result);
+      res.json({ result: result.data });
     } catch (err) {
       console.log(err);
       res

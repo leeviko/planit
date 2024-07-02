@@ -1,7 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { login, logout } from '../../controllers/auth';
-import { Error } from '../../server';
 import { validationRes } from '../../middleware/validationRes';
 
 const router: Router = express.Router();
@@ -36,12 +35,12 @@ router.post(
     try {
       const result = await login({ username, password });
 
-      if (result instanceof Error) {
-        return res.status(result.status ?? 400).json({ msg: result.msg });
+      if (!result.ok) {
+        return res.status(result.status).json({ msg: result.msg });
       }
 
-      req.session.user = result;
-      res.json(result);
+      req.session.user = result.data;
+      res.json(result.data);
     } catch (err: any) {
       console.log(err);
       res.status(400).json({ msg: 'Failed to login. Please try again later.' });

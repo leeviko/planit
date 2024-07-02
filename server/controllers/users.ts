@@ -3,7 +3,7 @@ import * as db from '../config/db';
 import { nanoid } from 'nanoid';
 import { QueryResult, QueryResultRow } from 'pg';
 import { randomBytes, scrypt, scryptSync } from 'crypto';
-import { Error } from '../server';
+import { ServerError } from '../server';
 
 export type NewUser = {
   username: string;
@@ -31,7 +31,14 @@ export async function getUserBy(
   return result.rows;
 }
 
-export async function registerUser(user: NewUser) {
+type RegisterSuccess = {
+  ok: true;
+  data: UserResult;
+};
+
+export async function registerUser(
+  user: NewUser
+): Promise<RegisterSuccess | ServerError> {
   const newUser = {
     ...user,
     id: nanoid(),
@@ -39,11 +46,11 @@ export async function registerUser(user: NewUser) {
 
   const isEmailUnique = await getUserBy('email', newUser.email);
   if (isEmailUnique.length > 0)
-    return new Error({ status: 400, msg: 'Email already in use' });
+    return { ok: false, status: 400, msg: 'Email already in use' };
 
   const isNameUnique = await getUserBy('name', newUser.username);
   if (isNameUnique.length > 0)
-    return new Error({ status: 400, msg: 'Username already in use' });
+    return { ok: false, status: 400, msg: 'Username already in use' };
 
   /**
    * GENERATE PASSWORD
@@ -57,10 +64,11 @@ export async function registerUser(user: NewUser) {
     hash = salt + ':' + key.toString('hex');
   } catch (err) {
     console.log(err);
-    return new Error({
-      status: 400,
+    return {
+      ok: false,
+      status: 500,
       msg: 'Failed to register. Please try again later.',
-    });
+    };
   }
 
   /**
@@ -80,12 +88,24 @@ export async function registerUser(user: NewUser) {
       newUser.email,
       hash,
     ]);
-    return result.rows[0] as UserResult;
+    const userResult = result.rows[0];
+
+    return {
+      ok: true,
+      data: {
+        id: userResult.id,
+        username: userResult.name,
+        email: userResult.email,
+        admin: userResult.admin,
+        created_at: userResult.created_at,
+      },
+    };
   } catch (err) {
     console.log(err);
-    return new Error({
-      status: 400,
+    return {
+      ok: false,
+      status: 500,
       msg: 'Failed to register. Please try again later.',
-    });
+    };
   }
 }

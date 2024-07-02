@@ -1,7 +1,6 @@
 import express, { Request, Response, Router } from 'express';
 import { body } from 'express-validator';
 import { NewUser, UserResult, registerUser } from '../../controllers/users';
-import { Error } from '../../server';
 import { validationRes } from '../../middleware/validationRes';
 
 declare module 'express-session' {
@@ -48,14 +47,13 @@ router.post(
 
     try {
       const result = await registerUser(newUser);
-      if (result instanceof Error) throw result;
-
-      req.session.user = result;
-      res.status(200).json(result);
-    } catch (err: any) {
-      if (err instanceof Error) {
-        return res.status(err.status).json({ msg: err.msg });
+      if (!result.ok) {
+        return res.status(result.status).json({ msg: result.msg });
       }
+
+      req.session.user = result.data;
+      res.json(result.data);
+    } catch (err: any) {
       res
         .status(400)
         .json({ msg: 'Failed to register. Please try again later.' });

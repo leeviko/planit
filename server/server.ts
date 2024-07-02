@@ -5,19 +5,11 @@ import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import cors from 'cors';
 
-export type TError = {
+export type ServerError = {
+  ok: false;
   status: number;
   msg: string;
 };
-
-export class Error {
-  status;
-  msg;
-  constructor({ status, msg }: TError) {
-    this.status = status;
-    this.msg = msg;
-  }
-}
 
 dotenv.config({
   path: process.env.NODE_ENV === 'production' ? '.env' : '.env.local',
