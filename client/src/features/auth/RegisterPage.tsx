@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from './authSlice';
 import useForm from '../../hooks/useForm';
 import noAuthRoute from './NoAuthRoute';
+import { ValidationErrors } from '../api/apiSlice';
 
 const RegisterPage = () => {
   const [values, handleChange] = useForm({
@@ -67,9 +68,16 @@ const RegisterPage = () => {
       }
 
       switch (err.status) {
-        case 422:
-          setError(err.data.errors[0].msg);
+        case 422: {
+          const errors: ValidationErrors<typeof values> = err.data;
+          const newErrors = {
+            email: errors.email?.msg || '',
+            username: errors.username?.msg || '',
+            password: errors.password?.msg || '',
+          };
+          setErrors(newErrors);
           break;
+        }
         default:
           setError(err.data.msg);
           break;
@@ -114,6 +122,9 @@ const RegisterPage = () => {
             Register
           </button>
           {error && <p className="errors">{error}</p>}
+          {errors.email && <p className="errors">{errors.email}</p>}
+          {errors.username && <p className="errors">{errors.username}</p>}
+          {errors.password && <p className="errors">{errors.password}</p>}
         </form>
         <div className="box-footer">
           <p>

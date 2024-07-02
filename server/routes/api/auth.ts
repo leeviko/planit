@@ -25,8 +25,16 @@ router.get('/', (req: Request, res: Response) => {
 router.post(
   '/',
   [
-    body('username').escape().trim().isLength({ min: 3, max: 25 }),
-    body('password').escape().trim().isLength({ min: 4, max: 100 }),
+    body('username')
+      .escape()
+      .trim()
+      .isLength({ min: 3, max: 25 })
+      .withMessage('Username must be between 3 and 25 characters'),
+    body('password')
+      .escape()
+      .trim()
+      .isLength({ min: 4, max: 100 })
+      .withMessage('Password must be at least 4 characters long'),
   ],
   validationRes,
   async (req: Request, res: Response) => {

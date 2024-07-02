@@ -9,6 +9,8 @@ import useForm from '../../hooks/useForm';
 import noAuthRoute from './NoAuthRoute';
 import { showToast } from '../ui/uiSlice';
 import Toast from '../ui/Toast';
+import { ValidationErrors } from '../api/apiSlice';
+
 const LoginPage = () => {
   const [values, handleChange] = useForm({
     username: '',
@@ -54,10 +56,16 @@ const LoginPage = () => {
         return;
       }
 
-      switch (err.data.status) {
-        case 422:
-          setError(err.data.errors[0].msg);
+      switch (err.status) {
+        case 422: {
+          const errors: ValidationErrors<typeof values> = err.data;
+          const newErrors = {
+            username: errors.username?.msg || '',
+            password: errors.password?.msg || '',
+          };
+          setErrors(newErrors);
           break;
+        }
         default:
           setError(err.data.msg);
           break;
@@ -95,6 +103,8 @@ const LoginPage = () => {
               Login
             </button>
             {error && <p className="errors">{error}</p>}
+            {errors.username && <p className="errors">{errors.username}</p>}
+            {errors.password && <p className="errors">{errors.username}</p>}
           </form>
           <div className="box-footer">
             <p>

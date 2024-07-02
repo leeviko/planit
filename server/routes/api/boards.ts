@@ -154,7 +154,13 @@ router.delete('/:boardId', auth, async (req: Request, res: Response) => {
  */
 router.post(
   '/',
-  [body('title').escape().trim().isLength({ min: 3, max: 45 })],
+  [
+    body('title')
+      .escape()
+      .trim()
+      .isLength({ min: 3, max: 45 })
+      .withMessage('Title must be between 3 and 45 characters.'),
+  ],
   auth,
   validationRes,
   async (req: Request, res: Response) => {
@@ -238,7 +244,11 @@ router.post(
   '/:boardId/lists',
   [
     param('boardId').escape().trim().notEmpty(),
-    body('title').escape().trim().isLength({ min: 1, max: 20 }),
+    body('title')
+      .escape()
+      .trim()
+      .isLength({ min: 1, max: 20 })
+      .withMessage('List name must be between 1 and 20 characters.'),
   ],
   auth,
   validationRes,
@@ -344,7 +354,11 @@ router.post(
     // TODO: Hmmm
     param('boardId').escape().trim().notEmpty(),
     body('listId').escape().trim().notEmpty(),
-    body('title').escape().trim().isLength({ min: 1, max: 100 }),
+    body('title')
+      .escape()
+      .trim()
+      .isLength({ min: 1, max: 50 })
+      .withMessage('Card name must be between 1 and 50 characters.'),
   ],
   auth,
   validationRes,

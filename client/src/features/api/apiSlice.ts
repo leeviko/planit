@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { Board, List } from '../boards/boardsSlice';
 import { User } from '../auth/authSlice';
 
+export type ValidationErrors<T> = Record<keyof T, { msg: string }>;
+
 type Register = {
   email: string;
   username: string;
