@@ -4,6 +4,7 @@ import session from 'express-session';
 import { createClient } from 'redis';
 import RedisStore from 'connect-redis';
 import cors from 'cors';
+import morgan from 'morgan';
 
 export type ServerError = {
   ok: false;
@@ -19,6 +20,8 @@ const app: Express = express();
 const port = process.env.PORT || 3000;
 
 app.use(express.json());
+
+app.use(morgan('dev'));
 
 const redisClient = createClient({ url: process.env.REDIS_URL });
 redisClient.connect().catch(console.error);
@@ -57,7 +60,10 @@ app.use(
 );
 app.use('/api/users', require('./routes/api/users'));
 app.use('/api/auth', require('./routes/api/auth'));
+
 app.use('/api/boards', require('./routes/api/boards'));
+app.use('/api/cards', require('./routes/api/cards'));
+app.use('/api/lists', require('./routes/api/lists'));
 
 app.listen(port, () => {
   console.log(`⚡ Server is running on port ${port}`);

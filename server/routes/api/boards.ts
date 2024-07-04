@@ -3,72 +3,14 @@ import { auth } from '../../middleware/auth';
 import { validationRes } from '../../middleware/validationRes';
 import { body, param } from 'express-validator';
 import {
-  createCard,
-  createList,
   createBoard,
   deleteBoard,
   getBoard,
   getBoards,
-  getListBy,
   updateBoard,
-  updateList,
 } from '../../controllers/boards';
 
 const router: Router = express.Router();
-
-export interface Board {
-  id: string;
-  user_id: string;
-  slug: string;
-  title: string;
-  favorited: boolean;
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface BoardWithLists extends Board {
-  lists: ListWithCards[];
-}
-
-export interface NewBoard {
-  id: string;
-  user_id: string;
-  slug: string;
-  title: string;
-}
-
-export type BoardUpdate = {
-  [key: string]: string | boolean | undefined;
-  title?: string;
-  favorited?: boolean;
-};
-
-export type ListUpdate = {
-  title?: string;
-  pos?: number;
-};
-
-export interface List {
-  id: string;
-  board_id: string;
-  title: string;
-  position: number;
-  created_at: Date;
-  updated_at: Date;
-}
-
-export interface ListWithCards extends List {
-  cards: Card[];
-}
-
-export interface Card {
-  id: string;
-  list_id: string;
-  title: string;
-  position: number;
-  created_at: Date;
-  updated_at: Date;
-}
 
 /**
  * @route  GET api/boards
@@ -99,7 +41,7 @@ router.get('/', auth, async (req: Request, res: Response) => {
  */
 router.get(
   '/:id',
-  [param('id').escape().trim()],
+  [param('id').escape().trim().notEmpty()],
   auth,
   validationRes,
   async (req: Request, res: Response) => {
@@ -130,22 +72,28 @@ router.get(
  * @desc   Delete board
  * @access Private
  */
-router.delete('/:boardId', auth, async (req: Request, res: Response) => {
-  const user = req.session.user!;
+router.delete(
+  '/:boardId',
+  [param('boardId').escape().trim().notEmpty()],
+  auth,
+  validationRes,
+  async (req: Request, res: Response) => {
+    const user = req.session.user!;
 
-  try {
-    const result = await deleteBoard(user, req.params.boardId);
-    if (!result.ok) {
-      return res.status(result.status).json({ msg: result.msg });
+    try {
+      const result = await deleteBoard(user, req.params.boardId);
+      if (!result.ok) {
+        return res.status(result.status).json({ msg: result.msg });
+      }
+      res.json({ msg: 'Board deleted.' });
+    } catch (err) {
+      console.log(err);
+      res
+        .status(400)
+        .json({ msg: 'Failed to delete board. Please try again later.' });
     }
-    res.json({ msg: 'Board deleted.' });
-  } catch (err) {
-    console.log(err);
-    res
-      .status(400)
-      .json({ msg: 'Failed to delete board. Please try again later.' });
   }
-});
+);
 
 /**
  * @route  POST api/boards
@@ -231,157 +179,6 @@ router.put(
       res
         .status(400)
         .json({ msg: 'Failed to update board. Please try again later.' });
-    }
-  }
-);
-
-/**
- * @route  POST api/boards/:boardId/lists
- * @desc   Create new list
- * @access Private
- */
-router.post(
-  '/:boardId/lists',
-  [
-    param('boardId').escape().trim().notEmpty(),
-    body('title')
-      .escape()
-      .trim()
-      .isLength({ min: 1, max: 20 })
-      .withMessage('List name must be between 1 and 20 characters.'),
-  ],
-  auth,
-  validationRes,
-  async (req: Request, res: Response) => {
-    const boardId = req.params.boardId;
-    const user = req.session.user!;
-
-    try {
-      const result = await createList(user, boardId, req.body.title);
-      if (!result.ok) {
-        return res.status(result.status).json({ msg: result.msg });
-      }
-      res.json({ result: result.data });
-    } catch (err) {
-      console.log(err);
-      res
-        .status(400)
-        .json({ msg: 'Failed to create list. Please try again later.' });
-    }
-  }
-);
-
-/**
- * @route  DELETE api/boards/:boardId/lists/:listId
- * @desc   Delete list
- * @access Private
- */
-router.delete(
-  '/:boardId/lists/:listId',
-  auth,
-  async (req: Request, res: Response) => {
-    try {
-      const es = await getListBy(
-        'id',
-        req.params.listId,
-        true,
-        req.session.user!.id
-      );
-      res.json(es);
-    } catch (err) {
-      console.log(err);
-      res.json(err);
-    }
-  }
-);
-
-/**
- * @route  PUT api/boards/:boardId/lists/:listId
- * @desc   Update list
- * @access Private
- */
-router.put(
-  '/:boardId/lists/:listId',
-  [
-    param('boardId').escape().trim().notEmpty(),
-    param('listId').escape().trim().notEmpty(),
-    body('title')
-      .optional()
-      .escape()
-      .trim()
-      .isLength({ min: 1, max: 20 })
-      .withMessage('Title must be between 1 and 20 characters.'),
-    body('pos').optional().escape().trim().toInt(),
-  ],
-  auth,
-  validationRes,
-  async (req: Request, res: Response) => {
-    const user = req.session.user!;
-    const boardId = req.params.boardId;
-    const listId = req.params.listId;
-    const { title, pos } = req.body;
-
-    if (!title && pos === undefined) {
-      return res.status(400).json({ msg: 'No fields to update.' });
-    }
-
-    const updateValues = { title, pos };
-
-    try {
-      const result = await updateList(user, boardId, listId, updateValues);
-
-      if (!result.ok) {
-        return res.status(result.status).json({ msg: result.msg });
-      }
-      res.json({ result });
-    } catch (err) {
-      console.log(err);
-      res
-        .status(400)
-        .json({ msg: 'Failed to update list. Please try again later.' });
-    }
-  }
-);
-
-/**
- * @route  POST api/boards/:boardId/cards
- * @desc   Create new card
- * @access Private
- */
-router.post(
-  '/:boardId/cards',
-  [
-    // TODO: Hmmm
-    param('boardId').escape().trim().notEmpty(),
-    body('listId').escape().trim().notEmpty(),
-    body('title')
-      .escape()
-      .trim()
-      .isLength({ min: 1, max: 50 })
-      .withMessage('Card name must be between 1 and 50 characters.'),
-  ],
-  auth,
-  validationRes,
-  async (req: Request, res: Response) => {
-    const user = req.session.user!;
-
-    const values = {
-      boardId: req.params.boardId,
-      listId: req.body.listId,
-      title: req.body.title,
-    };
-
-    try {
-      const result = await createCard(user, values);
-      if (!result.ok) {
-        return res.status(result.status).json({ msg: result.msg });
-      }
-      res.json({ result: result.data });
-    } catch (err) {
-      console.log(err);
-      res
-        .status(400)
-        .json({ msg: 'Failed to create card. Please try again later.' });
     }
   }
 );

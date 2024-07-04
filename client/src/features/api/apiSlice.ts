@@ -38,6 +38,14 @@ type NewCard = {
   title: string;
 };
 
+type CardUpdate = {
+  cardId: string;
+  boardId: string;
+  title?: string;
+  listId?: string;
+  pos?: number;
+};
+
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
@@ -120,10 +128,11 @@ export const apiSlice = createApi({
 
     createList: builder.mutation<List, { boardId: string; title: string }>({
       query: ({ boardId, title }) => ({
-        url: `/boards/${boardId}/lists`,
+        url: `/lists`,
         method: 'POST',
         credentials: 'include',
         body: {
+          boardId,
           title,
         },
       }),
@@ -133,10 +142,11 @@ export const apiSlice = createApi({
     }),
     updateList: builder.mutation<{ ok: boolean }, ListUpdate>({
       query: ({ boardId, listId, title, pos }) => ({
-        url: `/boards/${boardId}/lists/${listId}`,
+        url: `/lists/${listId}`,
         method: 'PUT',
         credentials: 'include',
         body: {
+          boardId,
           title,
           pos,
         },
@@ -148,12 +158,28 @@ export const apiSlice = createApi({
 
     createCard: builder.mutation<Card, NewCard>({
       query: ({ boardId, listId, title }) => ({
-        url: `/boards/${boardId}/cards/`,
+        url: `/cards`,
         method: 'POST',
+        credentials: 'include',
+        body: {
+          boardId,
+          listId,
+          title,
+        },
+      }),
+      invalidatesTags: (_result, _error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
+    updateCard: builder.mutation<Card, CardUpdate>({
+      query: ({ cardId, title, listId, pos }) => ({
+        url: `/cards/${cardId}`,
+        method: 'PUT',
         credentials: 'include',
         body: {
           title,
           listId,
+          pos,
         },
       }),
       invalidatesTags: (_result, _error, { boardId }) => [
@@ -178,4 +204,5 @@ export const {
   useUpdateListMutation,
 
   useCreateCardMutation,
+  useUpdateCardMutation,
 } = apiSlice;

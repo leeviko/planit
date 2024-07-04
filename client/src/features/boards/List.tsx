@@ -85,6 +85,7 @@ const List = ({ board_id, id, title, cards }: Props) => {
                 list_id={id}
                 id={card.id}
                 title={card.title}
+                pos={card.position}
               />
             ))}
           </SortableContext>

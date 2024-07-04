@@ -7,9 +7,10 @@ type Props = {
   id: string;
   list_id: string;
   title: string;
+  pos?: number;
 };
 
-const Card = ({ id, list_id, title }: Props) => {
+const Card = ({ id, list_id, title, pos }: Props) => {
   const {
     attributes,
     listeners,
@@ -23,6 +24,7 @@ const Card = ({ id, list_id, title }: Props) => {
       type: 'card',
       list_id,
       title,
+      pos,
     },
   });
 

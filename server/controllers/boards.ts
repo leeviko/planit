@@ -1,17 +1,36 @@
 import { UserResult, UserSession } from './users';
 import { ErrorCode, query } from '../config/db';
-import {
-  Board,
-  BoardUpdate,
-  ListUpdate,
-  Card,
-  List,
-  NewBoard,
-  BoardWithLists,
-} from '../routes/api/boards';
-import { arrayMove, slug } from '../utils';
+import { slug } from '../utils';
 import { nanoid } from 'nanoid';
 import { ServerError } from '../server';
+import { List, ListWithCards } from './lists';
+
+export interface Board {
+  id: string;
+  user_id: string;
+  slug: string;
+  title: string;
+  favorited: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface BoardWithLists extends Board {
+  lists: ListWithCards[];
+}
+
+export interface NewBoard {
+  id: string;
+  user_id: string;
+  slug: string;
+  title: string;
+}
+
+export type BoardUpdate = {
+  [key: string]: string | boolean | undefined;
+  title?: string;
+  favorited?: boolean;
+};
 
 /**
  * Get board by id or slug
@@ -21,8 +40,13 @@ import { ServerError } from '../server';
  */
 export async function getBoardBy(key: 'id' | 'slug', value: string) {
   const boardQuery = `SELECT * FROM boards WHERE ${key} = $1 LIMIT 1`;
-  const result = await query(boardQuery, [value]);
-  return result.rows[0] as Board;
+  try {
+    const result = await query(boardQuery, [value]);
+    return result.rows[0] as Board;
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
 }
 
 type GetBoardSuccess = {
@@ -80,19 +104,7 @@ type GetBoardsSuccess = {
 export async function getBoards(
   user: UserResult
 ): Promise<GetBoardsSuccess | ServerError> {
-  const boardQuery = `
-    SELECT 
-      b.*, 
-      array_agg(row_to_json(l)) AS lists 
-    FROM boards b
-    LEFT JOIN (
-      SELECT list.*, array_agg(row_to_json(c)) AS cards 
-      FROM lists list 
-      LEFT JOIN cards c ON list.id = c.list_id GROUP BY list.id
-    ) l 
-    ON b.id = l.board_id WHERE b.user_id = $1
-    GROUP BY b.id
-  `;
+  const boardQuery = `SELECT * FROM boards WHERE user_id = $1`;
 
   try {
     const result = await query(boardQuery, [user.id]);
@@ -239,236 +251,6 @@ export async function deleteBoard(
   }
 }
 
-type CreateListSuccess = {
-  ok: true;
-  data: List;
-};
-
-/**
- * Add list to a board
- * @param user - The user performing the action
- * @param boardId - The ID of the board
- * @param title - The title of the list
- * @returns An error or the new list
- */
-export async function createList(
-  user: UserResult,
-  boardId: string,
-  title: string
-): Promise<CreateListSuccess | ServerError> {
-  try {
-    const board = await getBoardBy('id', boardId);
-    if (!board || board.user_id !== user.id)
-      return { ok: false, status: 404, msg: 'Board not found' };
-  } catch (err) {
-    return {
-      ok: false,
-      status: 400,
-      msg: 'Something went wrong. Please try again later.',
-    };
-  }
-
-  const boardListsQuery = 'SELECT board_id FROM lists WHERE board_id = $1';
-
-  const newList = {
-    id: nanoid(),
-    boardId,
-    title,
-    position: 0,
-  };
-
-  try {
-    const boardLists = await query(boardListsQuery, [boardId]);
-    newList.position = boardLists.rows.length;
-  } catch (err) {
-    return {
-      ok: false,
-      status: 400,
-      msg: 'Something went wrong. Please try again later.',
-    };
-  }
-
-  const listQuery = `
-    INSERT INTO lists (id, board_id, title, position)
-    VALUES ($1, $2, $3, $4)
-    RETURNING * 
-  `;
-
-  try {
-    const result = await query(listQuery, [
-      newList.id,
-      newList.boardId,
-      newList.title,
-      newList.position,
-    ]);
-    return { ok: true, data: result.rows[0] };
-  } catch (err: any) {
-    console.log(err);
-    if (err.code === ErrorCode.DUPLICATE) {
-      return { ok: false, status: 400, msg: 'Title already in use' };
-    }
-    return {
-      ok: false,
-      status: 400,
-      msg: 'Failed to create list. Please try again later.',
-    };
-  }
-}
-
-/**
- * Update list
- * @param user - The user performing the action
- * @param boardId - The ID of the board
- * @param listId - The ID of the list
- * @param updateValues - Values to update
- * @returns The updated list or an error
- */
-export async function updateList(
-  user: UserResult,
-  boardId: string,
-  listId: string,
-  updateValues: ListUpdate
-): Promise<{ ok: true } | ServerError> {
-  const { title, pos } = updateValues;
-  const list = await getListBy('id', listId);
-  const board = await getBoardBy('id', boardId);
-
-  if (!list || list.board_id !== boardId || !board || board.user_id !== user.id)
-    return { ok: false, status: 404, msg: 'List not found' };
-
-  if (pos !== undefined && pos !== list.position) {
-    const boardLists = await getBoardLists(boardId);
-    if (!boardLists) return { ok: false, status: 404, msg: 'List not found' };
-
-    if (pos < 0 || pos > boardLists.length)
-      return { ok: false, status: 400, msg: 'Invalid position' };
-
-    const oldListIndex = boardLists.findIndex((list) => list.id === listId);
-    const newListIndex = pos;
-
-    const newLists = arrayMove(boardLists, oldListIndex, newListIndex);
-
-    try {
-      await moveLists(newLists);
-    } catch (err) {
-      console.log(err);
-      return {
-        ok: false,
-        status: 500,
-        msg: 'Failed to update list position. Please try again later.',
-      };
-    }
-  }
-
-  if (title) {
-    const updateListQuery = 'UPDATE lists SET title = $1 WHERE id = $2';
-
-    try {
-      await query(updateListQuery, [title, listId]);
-    } catch (err) {
-      console.log(err);
-      return {
-        ok: false,
-        status: 500,
-        msg: 'Failed to update title. Please try again later.',
-      };
-    }
-  }
-
-  return { ok: true };
-}
-
-async function moveLists(lists: List[]) {
-  let updateQuery = 'UPDATE lists SET position = CASE';
-
-  lists.forEach((list, index) => {
-    updateQuery += ` WHEN id = '${list.id}' THEN ${index}`;
-  });
-
-  updateQuery += ' END WHERE id IN (';
-  updateQuery += lists.map((list) => `'${list.id}'`).join(', ');
-  updateQuery += ');';
-
-  try {
-    const response = await query(updateQuery);
-    return response.rows;
-  } catch (err) {
-    console.log(err);
-    throw {
-      ok: false,
-      status: 500,
-      msg: 'Something went wrong. Please try again later.',
-    };
-  }
-}
-
-/**
- * Delete list
- * @param user - The user performing the action
- * @param listId - The ID of the list
- * @returns An error
- */
-export async function deleteList(
-  user: UserResult,
-  listId: string,
-  boardId: string
-) {
-  const board = await getBoardBy('id', boardId);
-  if (!board || board.user_id !== user.id)
-    return { ok: false, status: 404, msg: 'List not found' };
-
-  const deleteListQuery = 'DELETE FROM lists WHERE id = $1;';
-
-  try {
-    const result = await query(deleteListQuery, [listId]);
-    if (result.rowCount === 0)
-      return { ok: false, status: 404, msg: 'List not found' };
-
-    return { ok: true };
-  } catch (err) {
-    console.log(err);
-    return {
-      ok: false,
-      status: 500,
-      msg: 'Failed to delete list. Please try again later.',
-    };
-  }
-}
-
-/**
- * Get list by id or slug
- * @param key - The field to search by
- * @param value - The value to search for
- * @returns The list
- */
-export async function getListBy(
-  key: 'id',
-  value: string,
-  includeUser = false,
-  userId = ''
-) {
-  if (!includeUser) {
-    const listQuery = `SELECT * FROM lists WHERE ${key} = $1 LIMIT 1`;
-    const result = await query(listQuery, [value]);
-    return result.rows[0] as List;
-  }
-
-  // TODO: Fix this
-  const listQuery = `
-    SELECT l.* FROM lists AS l 
-      INNER JOIN users ON l.user_id = $1 
-    WHERE l.${key} = $2 LIMIT 1`;
-
-  try {
-    const result = await query(listQuery, [userId, value]);
-    return result.rows[0] as List;
-  } catch (err) {
-    console.log(err);
-
-    return false;
-  }
-}
-
 /**
  * Get all board lists
  * @param boardId - The board id
@@ -483,81 +265,5 @@ export async function getBoardLists(boardId: string) {
   } catch (err) {
     console.log(err);
     return false;
-  }
-}
-
-type NewCard = {
-  boardId: string;
-  listId: string;
-  title: string;
-};
-
-type CreateCardSuccess = {
-  ok: true;
-  data: Card;
-};
-
-/**
- * Add card to a list
- * @param user - The user performing the action
- * @param values - contains the board and list ids and the card title
- * @returns An error or the new card
- */
-export async function createCard(
-  user: UserResult,
-  values: NewCard
-): Promise<CreateCardSuccess | ServerError> {
-  const { boardId, listId, title } = values;
-
-  const list = await getListBy('id', listId);
-  if (!list || list.board_id !== boardId)
-    return { ok: false, status: 400, msg: 'Invalid values' };
-
-  const board = await getBoardBy('id', list.board_id);
-
-  if (!board || board.user_id !== user.id)
-    return { ok: false, status: 400, msg: 'Invalid values' };
-
-  const cardsQuery = 'SELECT list_id FROM cards WHERE list_id = $1';
-
-  const newCard = {
-    id: nanoid(),
-    listId,
-    title,
-    position: 0,
-  };
-
-  try {
-    const listCards = await query(cardsQuery, [listId]);
-    newCard.position = listCards.rows.length;
-  } catch (err) {
-    return {
-      ok: false,
-      status: 500,
-      msg: 'Something went wrong. Please try again later.',
-    };
-  }
-
-  const cardQuery = `
-    INSERT INTO cards (id, list_id, title, position)
-    VALUES ($1, $2, $3, $4)
-    RETURNING *
-  `;
-
-  try {
-    const result = await query(cardQuery, [
-      newCard.id,
-      newCard.listId,
-      newCard.title,
-      newCard.position,
-    ]);
-    return { ok: true, data: result.rows[0] };
-  } catch (err: any) {
-    console.log(err);
-    return {
-      ok: false,
-      status: 500,
-      msg: 'Failed to create card. Please try again later.',
-    };
   }
 }

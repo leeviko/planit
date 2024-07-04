@@ -12,10 +12,14 @@ import {
 } from '@dnd-kit/sortable';
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Board, List as ListItem, setList } from './boardsSlice';
-import Card from './Card';
+import { Board, Card, List as ListItem, setList } from './boardsSlice';
+import CardItem from './Card';
 import List from './List';
-import { useCreateListMutation, useUpdateListMutation } from '../api/apiSlice';
+import {
+  useCreateListMutation,
+  useUpdateCardMutation,
+  useUpdateListMutation,
+} from '../api/apiSlice';
 
 type Props = {
   board: Board;
@@ -29,6 +33,7 @@ export type ActiveCard = {
   id: string;
   list_id: string;
   title: string;
+  pos: number;
 };
 
 const BoardPageLists = ({ board }: Props) => {
@@ -40,6 +45,7 @@ const BoardPageLists = ({ board }: Props) => {
   const [newListName, setNewListName] = useState('');
   const [createList] = useCreateListMutation();
   const [updateList] = useUpdateListMutation();
+  const [updateCard] = useUpdateCardMutation();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -59,17 +65,45 @@ const BoardPageLists = ({ board }: Props) => {
         // @ts-expect-error
         id: event.active.id,
         title: event.active.data.current.title,
+        list_id: event.active.data.current.list_id,
+        pos: event.active.data.current.pos,
       });
       return;
     }
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
-    setActiveList(null);
-    setActiveCard(null);
-
     const { active, over } = event;
     if (!over) return;
+
+    if (activeCard) {
+      let card: Card | undefined;
+      let cardIndex;
+
+      for (const list of lists) {
+        card = list.cards.find((card) => card.id === activeCard.id);
+
+        if (card) {
+          cardIndex = list.cards.indexOf(card);
+          break;
+        }
+      }
+
+      if (!card) return;
+      try {
+        await updateCard({
+          boardId: board.id,
+          cardId: card.id,
+          listId: card.list_id,
+          pos: cardIndex,
+        }).unwrap();
+      } catch (err) {
+        console.log(err);
+      }
+    }
+
+    setActiveList(null);
+    setActiveCard(null);
 
     const oldLists = lists;
 
@@ -131,7 +165,7 @@ const BoardPageLists = ({ board }: Props) => {
       (card) => card.id === activeId
     );
 
-    const activeCard = activeListCards[activeCardIndex];
+    const activeCardFromList = activeListCards[activeCardIndex];
 
     if (overType === 'card') {
       if (activeCardListId !== overCardListId) {
@@ -149,9 +183,13 @@ const BoardPageLists = ({ board }: Props) => {
           cards: activeListCards.filter((card) => card.id !== activeId),
         };
 
+        newActiveList.cards = newActiveList.cards.map((card, index) => {
+          return { ...card, position: index };
+        });
+
         // Change the active card list id to the new list id
         const newActiveCard = {
-          ...activeCard,
+          ...activeCardFromList,
           list_id: overCardListId,
         };
 
@@ -166,6 +204,10 @@ const BoardPageLists = ({ board }: Props) => {
           newOverList.cards.length - 1,
           overCardIndex
         );
+
+        newOverList.cards = newOverList.cards.map((card, index) => {
+          return { ...card, position: index };
+        });
 
         setLists((prevLists) => {
           const newLists = prevLists.map((list) => {
@@ -228,7 +270,7 @@ const BoardPageLists = ({ board }: Props) => {
     };
 
     const newActiveCard = {
-      ...activeCard,
+      ...activeCardFromList,
       list_id: overId as string,
     };
 
@@ -321,7 +363,7 @@ const BoardPageLists = ({ board }: Props) => {
           )}
 
         {activeCard && (
-          <Card
+          <CardItem
             id={activeCard.id}
             list_id={activeCard.list_id}
             title={activeCard.title}
