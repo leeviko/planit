@@ -1,0 +1,41 @@
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+.dialog {
+  position: absolute;
+  background-color: var(--bg);
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 2rem 3rem;
+}
+
+.dialog h3 {
+  font-weight: 600;
+}
+
+.dialog-desc {
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.dialog-actions button {
+  background-color: var(--grey);
+  border: none;
+}
+
+.dialog-actions button:hover {
+  background-color: var(--grey-hover);
+}
+
+.dialog-actions button:first-child {
+  margin-right: 0.5rem;
+}

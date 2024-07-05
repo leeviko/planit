@@ -32,6 +32,11 @@ type ListUpdate = {
   pos?: number;
 };
 
+type ListDelete = {
+  boardId: string;
+  listId: string;
+};
+
 type NewCard = {
   boardId: string;
   listId: string;
@@ -125,6 +130,17 @@ export const apiSlice = createApi({
         { type: 'Board', id },
       ],
     }),
+    deleteBoard: builder.mutation<{ ok: boolean }, string>({
+      query: (id) => ({
+        url: `/boards/${id}`,
+        method: 'DELETE',
+        credentials: 'include',
+      }),
+      invalidatesTags: (_result, _error, id) => [
+        'Board',
+        { type: 'Board', id },
+      ],
+    }),
 
     createList: builder.mutation<List, { boardId: string; title: string }>({
       query: ({ boardId, title }) => ({
@@ -150,6 +166,16 @@ export const apiSlice = createApi({
           title,
           pos,
         },
+      }),
+      invalidatesTags: (_result, _error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
+    deleteList: builder.mutation<{ ok: boolean }, ListDelete>({
+      query: ({ listId }) => ({
+        url: `/lists/${listId}`,
+        method: 'DELETE',
+        credentials: 'include',
       }),
       invalidatesTags: (_result, _error, { boardId }) => [
         { type: 'Board', id: boardId },
@@ -202,6 +228,7 @@ export const {
 
   useCreateListMutation,
   useUpdateListMutation,
+  useDeleteListMutation,
 
   useCreateCardMutation,
   useUpdateCardMutation,

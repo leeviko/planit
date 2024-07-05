@@ -4,6 +4,9 @@ import {
   DragOverEvent,
   DragOverlay,
   DragStartEvent,
+  MouseSensor,
+  useSensor,
+  useSensors,
 } from '@dnd-kit/core';
 import {
   SortableContext,
@@ -11,15 +14,18 @@ import {
   horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useEffect, useMemo, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Board, Card, List as ListItem, setList } from './boardsSlice';
 import CardItem from './Card';
 import List from './List';
 import {
   useCreateListMutation,
+  useDeleteListMutation,
   useUpdateCardMutation,
   useUpdateListMutation,
 } from '../api/apiSlice';
+import { closeDialog, showDialog, showToast } from '../ui/uiSlice';
+import { RootState } from '../../app/store';
 
 type Props = {
   board: Board;
@@ -41,12 +47,41 @@ const BoardPageLists = ({ board }: Props) => {
   const listIds = useMemo(() => lists.map((list) => list.id), [lists]);
   const [activeList, setActiveList] = useState<ActiveList | null>(null);
   const [activeCard, setActiveCard] = useState<ActiveCard | null>(null);
+  const mouseSensor = useSensor(MouseSensor, {
+    activationConstraint: {
+      distance: 5,
+    },
+  });
+  const sensors = useSensors(mouseSensor);
   const [showAddInput, setShowAddInput] = useState(false);
   const [newListName, setNewListName] = useState('');
   const [createList] = useCreateListMutation();
   const [updateList] = useUpdateListMutation();
+  const [deleteList] = useDeleteListMutation();
   const [updateCard] = useUpdateCardMutation();
+  const dialogConfirmed = useSelector(
+    (state: RootState) => state.ui.dialogConfirmed
+  );
+  const dialogId = useSelector((state: RootState) => state.ui.dialog.id);
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    const deleteRequest = async () => {
+      try {
+        await deleteList({
+          boardId: board.id,
+          listId: dialogId,
+        });
+      } catch (err) {
+        console.log('err');
+        dispatch(showToast({ msg: 'Failed to delete list', type: 'error' }));
+      }
+    };
+    if (dialogConfirmed) {
+      deleteRequest();
+      dispatch(closeDialog());
+    }
+  }, [dialogConfirmed, dispatch, dialogId, board.id, deleteList]);
 
   useEffect(() => {
     setLists(board.lists);
@@ -313,8 +348,21 @@ const BoardPageLists = ({ board }: Props) => {
     setNewListName('');
   };
 
+  const handleDeleteDialog = (id: string) => {
+    dispatch(
+      showDialog({
+        title: 'Delete list',
+        description: 'Are you sure you want to delete this list?',
+        yes: 'Yes',
+        no: 'Cancel',
+        id,
+      })
+    );
+  };
+
   return (
     <DndContext
+      sensors={sensors}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       onDragOver={handleDragOver}
@@ -327,6 +375,7 @@ const BoardPageLists = ({ board }: Props) => {
             title={list.title}
             cards={list.cards}
             board_id={list.board_id}
+            handleDeleteDialog={handleDeleteDialog}
           />
         ))}
       </SortableContext>

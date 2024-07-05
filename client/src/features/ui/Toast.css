@@ -27,3 +27,7 @@
 .toast.success {
   background-color: var(--green);
 }
+
+.toast.error {
+  background-color: var(--red);
+}

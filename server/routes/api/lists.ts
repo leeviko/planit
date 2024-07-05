@@ -28,7 +28,7 @@ router.post(
   auth,
   validationRes,
   async (req: Request, res: Response) => {
-    const boardId = req.params.boardId;
+    const boardId = req.body.boardId;
     const user = req.session.user!;
 
     try {
@@ -53,19 +53,15 @@ router.post(
  */
 router.delete(
   '/:listId',
-  [
-    param('listId').escape().trim().notEmpty(),
-    body('boardId').escape().trim().notEmpty(),
-  ],
+  [param('listId').escape().trim().notEmpty()],
   validationRes,
   auth,
   async (req: Request, res: Response) => {
     const user = req.session.user!;
     const listId = req.params.listId;
-    const boardId = req.body.boardId;
 
     try {
-      const result = await deleteList(user, listId, boardId);
+      const result = await deleteList(user, listId);
       if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
@@ -116,7 +112,7 @@ router.put(
         return res.status(result.status).json({ msg: result.msg });
       }
 
-      res.json(result.ok);
+      res.json(result);
     } catch (err) {
       console.log(err);
       res

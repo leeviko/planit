@@ -18,10 +18,19 @@ export type UIState = {
       required?: { min: number; max: number };
     }[];
   };
+  dialog: {
+    title: string;
+    description: string;
+    yes: string;
+    no: string;
+    id: string;
+  };
   showToast: boolean;
   showSettings: boolean;
   showFormModal: boolean;
   formModalSubmitted: boolean;
+  showDialog: boolean;
+  dialogConfirmed: boolean;
 };
 
 const initialState: UIState = {
@@ -36,10 +45,19 @@ const initialState: UIState = {
     isLoading: false,
     inputs: [],
   },
+  dialog: {
+    title: '',
+    description: '',
+    yes: 'Yes',
+    no: 'Cancel',
+    id: '',
+  },
   showToast: false,
   showSettings: false,
   showFormModal: false,
   formModalSubmitted: false,
+  showDialog: false,
+  dialogConfirmed: false,
 };
 
 const uiSlice = createSlice({
@@ -84,17 +102,39 @@ const uiSlice = createSlice({
     setFormModalLoading(state, action) {
       state.formModal.isLoading = action.payload;
     },
+
+    showDialog(state, action) {
+      state.showDialog = true;
+      state.dialogConfirmed = false;
+      state.dialog = action.payload;
+    },
+    closeDialog(state) {
+      state.showDialog = false;
+      state.dialogConfirmed = false;
+      state.dialog = initialState.dialog;
+    },
+    confirmDialog(state) {
+      state.dialogConfirmed = true;
+      state.showDialog = false;
+    },
   },
 });
 
 export const {
   showToast,
   hideToast,
+
   toggleSettings,
+
   showFormModal,
   hideFormModal,
   submitFormModal,
   formModalError,
   setFormModalLoading,
+
+  showDialog,
+  closeDialog,
+  confirmDialog,
 } = uiSlice.actions;
+
 export default uiSlice.reducer;

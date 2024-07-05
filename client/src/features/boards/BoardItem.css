@@ -21,6 +21,27 @@
   border: none;
 }
 
+.favorite-btn img:hover {
+  transform: scale(1.1);
+}
+
+.favorite-btn img {
+  transition: transform 100ms ease-in-out;
+}
+
+.board-item .favorite-btn {
+  transition: opacity 100ms ease-in-out, transform 150ms ease-in-out;
+  transform: translateY(10px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.board-item:hover .favorite-btn {
+  transform: translateY(0px);
+  opacity: 1;
+  pointer-events: all;
+}
+
 .new.board-item {
   transition: background-color 100ms ease-in-out;
   border: none;

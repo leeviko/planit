@@ -8,6 +8,9 @@
 }
 
 .list-title {
+  position: relative;
+  display: flex;
+  align-items: center;
   border-top-right-radius: var(--border-radius);
   border-top-left-radius: var(--border-radius);
   padding: 0.75rem 1rem;
@@ -15,6 +18,27 @@
   font-weight: 600;
   font-size: 0.9rem;
   cursor: grab;
+}
+
+.list-title button {
+  transition: opacity 150ms ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+  border: none;
+  background: none;
+  position: absolute;
+  right: 0.75rem;
+}
+
+.list-title:hover button {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.list-title img {
+  width: 24px;
+  cursor: pointer;
+  vertical-align: middle;
 }
 
 .list-cards {

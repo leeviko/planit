@@ -188,10 +188,12 @@ async function moveLists(lists: List[]) {
  */
 export async function deleteList(
   user: UserResult,
-  listId: string,
-  boardId: string
+  listId: string
 ): Promise<{ ok: true; msg: string } | ServerError> {
-  const board = await getBoardBy('id', boardId);
+  const list = await getListBy('id', listId);
+  if (!list) return { ok: false, status: 404, msg: 'List not found' };
+
+  const board = await getBoardBy('id', list.board_id);
   if (!board || board.user_id !== user.id)
     return { ok: false, status: 404, msg: 'List not found' };
 
@@ -201,7 +203,7 @@ export async function deleteList(
     const result = await query(deleteListQuery, [listId]);
     if (result.rowCount === 0)
       return { ok: false, status: 404, msg: 'List not found' };
-
+    // TODO: update list positions
     return { ok: true, msg: 'List deleted' };
   } catch (err) {
     console.log(err);

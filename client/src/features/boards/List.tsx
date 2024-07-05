@@ -9,15 +9,17 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import { useCreateCardMutation } from '../api/apiSlice';
+import DeleteIcon from '../../assets/delete.svg';
 
 type Props = {
   id: string;
   board_id: string;
   title: string;
   cards: Card[];
+  handleDeleteDialog?: (id: string) => void;
 };
 
-const List = ({ board_id, id, title, cards }: Props) => {
+const List = ({ board_id, id, title, cards, handleDeleteDialog }: Props) => {
   const cardIds = useMemo(() => cards.map((card) => card.id), [cards]);
   const [originalHeight, setOriginalHeight] = useState<string | number>(0);
   const [newCardName, setNewCardName] = useState('');
@@ -73,6 +75,13 @@ const List = ({ board_id, id, title, cards }: Props) => {
       <div className="list-content">
         <h3 className="list-title" {...attributes} {...listeners}>
           {title}
+          <button
+            onClick={
+              handleDeleteDialog ? () => handleDeleteDialog(id) : undefined
+            }
+          >
+            <img src={DeleteIcon} alt="Delete" />
+          </button>
         </h3>
         <div className="list-cards">
           <SortableContext
