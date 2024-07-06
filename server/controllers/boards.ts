@@ -257,7 +257,7 @@ export async function deleteBoard(
  * @returns The lists
  */
 export async function getBoardLists(boardId: string) {
-  const listsQuery = `SELECT * FROM lists WHERE board_id = $1`;
+  const listsQuery = `SELECT * FROM lists WHERE board_id = $1 ORDER BY position;`;
 
   try {
     const result = await query(listsQuery, [boardId]);
