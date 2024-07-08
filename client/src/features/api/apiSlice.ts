@@ -51,6 +51,11 @@ type CardUpdate = {
   pos?: number;
 };
 
+type BoardResult = {
+  ok: boolean;
+  data: Board;
+};
+
 export const apiSlice = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_API_URL }),
@@ -115,7 +120,7 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['Board'],
     }),
-    updateBoard: builder.mutation<Board, BoardUpdate>({
+    updateBoard: builder.mutation<BoardResult, BoardUpdate>({
       query: ({ id, favorited, title }) => ({
         url: `/boards/${id}`,
         method: 'PUT',
@@ -225,6 +230,7 @@ export const {
   useGetBoardQuery,
   useCreateBoardMutation,
   useUpdateBoardMutation,
+  useDeleteBoardMutation,
 
   useCreateListMutation,
   useUpdateListMutation,

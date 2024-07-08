@@ -24,9 +24,12 @@ export type UIState = {
     yes: string;
     no: string;
     id: string;
+    initiator: string;
   };
   showToast: boolean;
   showSettings: boolean;
+  showBoardDropdown: boolean;
+  boardEditing: boolean;
   showFormModal: boolean;
   formModalSubmitted: boolean;
   showDialog: boolean;
@@ -51,9 +54,12 @@ const initialState: UIState = {
     yes: 'Yes',
     no: 'Cancel',
     id: '',
+    initiator: '',
   },
   showToast: false,
   showSettings: false,
+  showBoardDropdown: false,
+  boardEditing: false,
   showFormModal: false,
   formModalSubmitted: false,
   showDialog: false,
@@ -75,6 +81,13 @@ const uiSlice = createSlice({
 
     toggleSettings(state) {
       state.showSettings = !state.showSettings;
+    },
+    toggleBoardDropdown(state) {
+      state.showBoardDropdown = !state.showBoardDropdown;
+    },
+
+    setBoardEditing(state, action) {
+      state.boardEditing = action.payload;
     },
 
     showFormModal(state, action) {
@@ -103,7 +116,7 @@ const uiSlice = createSlice({
       state.formModal.isLoading = action.payload;
     },
 
-    showDialog(state, action) {
+    showDialog(state, action: { payload: UIState['dialog'] }) {
       state.showDialog = true;
       state.dialogConfirmed = false;
       state.dialog = action.payload;
@@ -125,6 +138,9 @@ export const {
   hideToast,
 
   toggleSettings,
+  toggleBoardDropdown,
+
+  setBoardEditing,
 
   showFormModal,
   hideFormModal,

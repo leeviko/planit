@@ -1,6 +1,6 @@
 .board-navbar {
   background-color: var(--grey);
-  height: 50px;
+  height: var(--board-navbar-height);
   display: flex;
   justify-content: space-between;
   align-items: center;

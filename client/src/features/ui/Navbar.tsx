@@ -3,7 +3,7 @@ import './Navbar.css';
 
 const Navbar = () => {
   return (
-    <nav>
+    <nav className="nav">
       <div className="nav-noauth nav-content">
         <img className="logo" src={Logo} alt="" />
         <button className="btn">Go to boards</button>

@@ -5,20 +5,28 @@ import { useDispatch } from 'react-redux';
 import { toggleSettings } from './uiSlice';
 import SettingsSVG from '../../assets/settings.svg';
 import Settings from './Settings';
+import { Link } from 'react-router-dom';
 
 const AuthNavbar = () => {
   const dispatch = useDispatch();
 
   return (
     <>
-      <nav>
+      <nav className="nav">
         <div className="nav-auth nav-content">
-          <img className="logo" src={Logo} alt="" />
+          <Link to="/boards">
+            <img className="logo" src={Logo} alt="" />
+          </Link>
           <button
             className="settings-btn"
             onClick={() => dispatch(toggleSettings())}
           >
-            <img src={SettingsSVG} alt="" draggable="false" />
+            <img
+              className="settings-img"
+              src={SettingsSVG}
+              alt="Settings"
+              draggable="false"
+            />
           </button>
         </div>
       </nav>

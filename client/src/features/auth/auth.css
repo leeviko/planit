@@ -49,15 +49,6 @@ form label {
   margin-bottom: 0.2rem;
 }
 
-form input {
-  background: none;
-  border: 2px solid hsla(0, 0%, 75%, 0.2);
-  padding: 0.3rem 0.5rem;
-  color: white;
-  font-family: inherit;
-  border-radius: var(--border-radius);
-}
-
 form input.invalid {
   border-color: var(--red);
 }

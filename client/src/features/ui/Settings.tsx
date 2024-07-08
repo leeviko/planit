@@ -6,6 +6,7 @@ import { showToast, toggleSettings } from './uiSlice';
 import { RootState } from '../../app/store';
 
 import './Settings.css';
+import { useEffect, useRef } from 'react';
 
 const Settings = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -13,6 +14,7 @@ const Settings = () => {
   const [logout] = useLogoutMutation();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleLogout = async () => {
     try {
@@ -27,8 +29,35 @@ const Settings = () => {
     }
   };
 
+  useEffect(() => {
+    const handleClickOutside = (event: any) => {
+      if (
+        event.target.className === 'settings-img' ||
+        event.target.className === 'settings-btn'
+      )
+        return;
+
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        dispatch(toggleSettings());
+      }
+    };
+
+    if (showSettings) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dispatch, showSettings]);
+
   return (
-    <div className={`settings-dropdown ${showSettings ? 'show' : 'hide'}`}>
+    <div
+      ref={dropdownRef}
+      className={`settings-dropdown ${showSettings ? 'show' : 'hide'}`}
+    >
       <div className="settings-section">
         <p className="settings-section-title">Account</p>
         <div className="settings-account">

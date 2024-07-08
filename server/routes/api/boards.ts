@@ -173,7 +173,7 @@ router.put(
         return res.status(404).json({ msg: 'Board not found.' });
       }
 
-      res.json({ result: result.data });
+      res.json(result);
     } catch (err: any) {
       console.log(err);
       res

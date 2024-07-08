@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import BoardNavbar from './BoardNavbar';
 import { useGetBoardQuery } from '../api/apiSlice';
 import { useDispatch } from 'react-redux';
@@ -19,6 +19,14 @@ const BoardPage = () => {
 
     dispatch(setBoard(board));
   }, [board, dispatch]);
+
+  if (!isLoading && !board)
+    return (
+      <div className="board-page">
+        <h1>Board not found</h1>
+        <Link to="/boards">Go to boards</Link>
+      </div>
+    );
 
   return (
     <div className="board-page">

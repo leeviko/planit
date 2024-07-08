@@ -1,5 +1,5 @@
 .boards-page {
-  top: calc(80px + 5rem);
+  top: calc(var(--navbar-height) + 5rem);
   position: absolute;
   max-width: 60%;
   min-width: 60%;

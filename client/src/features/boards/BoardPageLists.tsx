@@ -62,7 +62,7 @@ const BoardPageLists = ({ board }: Props) => {
   const dialogConfirmed = useSelector(
     (state: RootState) => state.ui.dialogConfirmed
   );
-  const dialogId = useSelector((state: RootState) => state.ui.dialog.id);
+  const dialog = useSelector((state: RootState) => state.ui.dialog);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -70,18 +70,18 @@ const BoardPageLists = ({ board }: Props) => {
       try {
         await deleteList({
           boardId: board.id,
-          listId: dialogId,
-        });
+          listId: dialog.id,
+        }).unwrap();
       } catch (err) {
-        console.log('err');
+        console.log(err);
         dispatch(showToast({ msg: 'Failed to delete list', type: 'error' }));
       }
     };
-    if (dialogConfirmed) {
+    if (dialogConfirmed && dialog.initiator === 'list') {
       deleteRequest();
       dispatch(closeDialog());
     }
-  }, [dialogConfirmed, dispatch, dialogId, board.id, deleteList]);
+  }, [dialogConfirmed, dispatch, dialog, board.id, deleteList]);
 
   useEffect(() => {
     setLists(board.lists);
@@ -356,6 +356,7 @@ const BoardPageLists = ({ board }: Props) => {
         yes: 'Yes',
         no: 'Cancel',
         id,
+        initiator: 'list',
       })
     );
   };

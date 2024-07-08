@@ -29,6 +29,7 @@
   --red-light: rgb(164, 40, 40);
   --red: rgb(139, 32, 32);
   --red-015: rgba(139, 32, 32, 0.15);
+  --red-hover: rgb(121, 30, 30);
 
   --green: #268626;
 
@@ -37,6 +38,9 @@
   --grey-dark: #2d2d2d;
 
   --border-radius: 3px;
+
+  --navbar-height: 80px;
+  --board-navbar-height: 50px;
 }
 
 @font-face {
@@ -54,6 +58,14 @@ body {
 a {
   text-decoration: none;
   color: var(--link);
+}
+input {
+  background: none;
+  border: 2px solid hsla(0, 0%, 75%, 0.2);
+  padding: 0.3rem 0.5rem;
+  color: white;
+  font-family: inherit;
+  border-radius: var(--border-radius);
 }
 
 .btn,
@@ -76,4 +88,18 @@ a {
 .btn-line:hover {
   border-color: var(--accent-hover);
   background-color: var(--accent-hover);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+.overlay.invisible {
+  background: none;
 }
