@@ -1,25 +1,71 @@
-.home-content {
-  margin: 10rem 450px;
+.home-page {
+  height: calc(100vh - var(--navbar-height));
 }
 
-.home-content .text {
-  margin: 1rem 0;
+.home-header {
+  height: 50%;
+  padding: 0 var(--landing-padding);
+  display: flex;
+  align-items: center;
 }
 
-.home-content h1 {
-  width: 560px;
+.home-header-pattern {
+  position: fixed;
+  z-index: -1;
+  scale: 2.5;
+  rotate: 45deg;
+  opacity: 0.1;
+  right: -200px;
+  top: -400px;
+  pointer-events: none;
+  user-select: none;
 }
 
-.home-content p {
+.home-header h1 {
+  width: 700px;
+  font-size: 2.5rem;
+}
+
+.home-header p {
   margin: 1rem 0;
   color: rgba(255, 255, 255, 0.8);
 }
 
-.home-content a:first-of-type {
+.home-header a:first-of-type {
   margin-right: 1rem;
 }
 
-.home-content a {
+.home-header a {
   font-size: 0.9rem;
-  padding: 0.3rem 1.2rem;
+}
+
+.home-footer {
+  background-color: var(--black);
+  height: 50%;
+  padding: 5rem var(--landing-padding);
+}
+
+.home-footer-cards {
+  height: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3rem;
+}
+
+.home-footer-card {
+  display: grid;
+  grid-template-rows: max-content 1fr;
+  gap: 1rem;
+  max-width: 350px;
+  padding: 1.5rem;
+  background-color: var(--accent-dark);
+}
+
+.home-footer-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.home-footer-card p {
+  color: rgba(255, 255, 255, 0.8);
 }

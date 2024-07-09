@@ -41,6 +41,8 @@
 
   --navbar-height: 80px;
   --board-navbar-height: 50px;
+
+  --landing-padding: 600px;
 }
 
 @font-face {
@@ -84,6 +86,28 @@ input {
   background-color: var(--accent);
 }
 
+.btn-lg {
+  transition: all 0.15s ease;
+  color: rgba(255, 255, 255, 0.8);
+  background-color: var(--accent);
+  padding: 0.5rem 1.25rem;
+  border: 2px solid var(--accent);
+}
+
+.btn-lg-line {
+  transition: all 0.15s ease;
+  background-color: var(--bg);
+  color: rgba(255, 255, 255, 0.8);
+  padding: 0.5rem 1.25rem;
+  border: 2px solid var(--accent);
+}
+
+.btn-lg:hover,
+.btn-lg-line:hover {
+  border-color: var(--accent-hover);
+  background-color: var(--accent-hover);
+}
+
 .btn:hover,
 .btn-line:hover {
   border-color: var(--accent-hover);
@@ -102,4 +126,16 @@ input {
 
 .overlay.invisible {
   background: none;
+}
+
+@media screen and (max-width: 2000px) {
+  :root {
+    --landing-padding: 400px;
+  }
+}
+
+@media screen and (max-width: 1500px) {
+  :root {
+    --landing-padding: 100px;
+  }
 }

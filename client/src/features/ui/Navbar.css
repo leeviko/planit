@@ -12,7 +12,7 @@
 }
 
 .nav-noauth {
-  margin: 0 450px;
+  margin: 0 var(--landing-padding);
 }
 .nav-auth {
   margin: 0 25px;
