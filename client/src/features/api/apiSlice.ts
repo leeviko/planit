@@ -217,6 +217,19 @@ export const apiSlice = createApi({
         { type: 'Board', id: boardId },
       ],
     }),
+    deleteCard: builder.mutation<
+      { ok: boolean },
+      { cardId: string; boardId: string }
+    >({
+      query: ({ cardId }) => ({
+        url: `/cards/${cardId}`,
+        method: 'DELETE',
+        credentials: 'include',
+      }),
+      invalidatesTags: (_result, _error, { boardId }) => [
+        { type: 'Board', id: boardId },
+      ],
+    }),
   }),
 });
 
@@ -238,4 +251,5 @@ export const {
 
   useCreateCardMutation,
   useUpdateCardMutation,
+  useDeleteCardMutation,
 } = apiSlice;

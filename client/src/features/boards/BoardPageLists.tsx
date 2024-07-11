@@ -415,6 +415,7 @@ const BoardPageLists = ({ board }: Props) => {
         {activeCard && (
           <CardItem
             id={activeCard.id}
+            board_id={board.id}
             list_id={activeCard.list_id}
             title={activeCard.title}
           />

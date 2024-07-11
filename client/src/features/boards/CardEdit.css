@@ -1,0 +1,33 @@
+.card-editing {
+  position: relative;
+  z-index: 2;
+  margin-bottom: 0.5rem;
+}
+
+.card-input-container button {
+  position: absolute;
+  left: 0;
+  top: calc(100% + 0.5rem);
+  border: none;
+}
+
+.card-input {
+  width: 100%;
+  background-color: var(--list-bg);
+}
+
+.card-sidebar {
+  position: absolute;
+  right: -0.5rem;
+  top: 0;
+  transform: translateX(100%);
+}
+
+.delete-btn {
+  background-color: var(--red);
+  border: none;
+}
+
+.delete-btn:hover {
+  background-color: var(--red-hover);
+}

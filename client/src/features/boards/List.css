@@ -46,6 +46,7 @@
 }
 
 .card {
+  display: block;
   margin: 0.5rem 0;
   font-size: 0.9rem;
   background-color: var(--card-bg);
@@ -53,8 +54,38 @@
   border-radius: var(--border-radius);
 }
 
+.card-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-edit-btn {
+  border: none;
+  background: none;
+}
+
+.card img {
+  transition: opacity 150ms ease-in-out;
+  opacity: 0;
+  pointer-events: none;
+  cursor: pointer;
+  width: 24px;
+  padding: 3px;
+}
+
+.card:hover img {
+  border-radius: 50%;
+  opacity: 0.8;
+  pointer-events: all;
+}
+
 .card-title {
   color: rgba(255, 255, 255, 0.8);
+}
+
+.card:hover img:hover {
+  background-color: var(--accent-dark-010);
 }
 
 .add-card-btn {

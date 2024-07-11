@@ -2,7 +2,7 @@ import express, { Request, Response, Router } from 'express';
 import { auth } from '../../middleware/auth';
 import { validationRes } from '../../middleware/validationRes';
 import { body, param } from 'express-validator';
-import { createCard, updateCard } from '../../controllers/cards';
+import { createCard, deleteCard, updateCard } from '../../controllers/cards';
 
 const router: Router = express.Router();
 
@@ -96,6 +96,33 @@ router.put(
       res
         .status(400)
         .json({ msg: 'Failed to update card. Please try again later.' });
+    }
+  }
+);
+/**
+ * @route  DELETE api/cards/:cardId
+ * @desc   Delete card
+ * @access Private
+ */
+router.delete(
+  '/:cardId',
+  [param('cardId').escape().trim().notEmpty()],
+  validationRes,
+  auth,
+  async (req: Request, res: Response) => {
+    const user = req.session.user!;
+    const { cardId } = req.params;
+    try {
+      const result = await deleteCard(user, cardId);
+      if (!result.ok) {
+        return res.status(result.status).json({ msg: result.msg });
+      }
+      res.json(result);
+    } catch (err) {
+      console.log(err);
+      res
+        .status(400)
+        .json({ msg: 'Failed to delete card. Please try again later.' });
     }
   }
 );

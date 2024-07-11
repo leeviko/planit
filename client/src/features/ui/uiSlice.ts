@@ -29,6 +29,7 @@ export type UIState = {
   showToast: boolean;
   showSettings: boolean;
   showBoardDropdown: boolean;
+  cardEditing: string | null;
   boardEditing: boolean;
   showFormModal: boolean;
   formModalSubmitted: boolean;
@@ -59,6 +60,7 @@ const initialState: UIState = {
   showToast: false,
   showSettings: false,
   showBoardDropdown: false,
+  cardEditing: null,
   boardEditing: false,
   showFormModal: false,
   formModalSubmitted: false,
@@ -84,6 +86,9 @@ const uiSlice = createSlice({
     },
     toggleBoardDropdown(state) {
       state.showBoardDropdown = !state.showBoardDropdown;
+    },
+    setCardEditing(state, action) {
+      state.cardEditing = action.payload;
     },
 
     setBoardEditing(state, action) {
@@ -141,6 +146,7 @@ export const {
   toggleBoardDropdown,
 
   setBoardEditing,
+  setCardEditing,
 
   showFormModal,
   hideFormModal,

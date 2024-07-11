@@ -251,15 +251,34 @@ async function getListCards(listId: string) {
  * @param cardId - The id of the card
  * @returns boolean
  */
-export async function deleteCard(cardId: string) {
-  const deleteCardQuery = 'DELETE FROM cards WHERE id = $1;';
+export async function deleteCard(
+  user: UserResult,
+  cardId: string
+): Promise<{ ok: true } | ServerError> {
+  const card = await getCardBy('id', cardId);
+  if (!card) return { ok: false, status: 404, msg: 'Card not found' };
+
+  const list = await getListBy('id', card.list_id);
+  if (!list) return { ok: false, status: 404, msg: 'Card not found' };
+
+  const board = await getBoardBy('id', list.board_id);
+  if (!board || board.user_id !== user.id)
+    return { ok: false, status: 404, msg: 'Card not found' };
+
+  const deleteCardQuery = `DELETE FROM cards WHERE id = $1;`;
 
   try {
     const result = await query(deleteCardQuery, [cardId]);
-    return result.rowCount === 1;
+    if (result.rowCount === 0)
+      return { ok: false, status: 404, msg: 'Card not found' };
+    return { ok: true };
   } catch (err) {
     console.log(err);
-    return false;
+    return {
+      ok: false,
+      status: 500,
+      msg: 'Something went wrong. Please try again later.',
+    };
   }
 }
 

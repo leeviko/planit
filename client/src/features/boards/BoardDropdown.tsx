@@ -36,7 +36,6 @@ const BoardDropdown = ({ id }: Props) => {
         event.target.className === 'board-dropdown-btn'
       )
         return;
-
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         dispatch(toggleBoardDropdown());
       }
