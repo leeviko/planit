@@ -65,6 +65,7 @@ const BoardDropdown = ({ id }: Props) => {
     if (dialogConfirmed && dialog.initiator === 'board') {
       deleteRequest();
       dispatch(closeDialog());
+      dispatch(showToast({ msg: 'Board deleted', type: 'success' }));
     }
   }, [dialogConfirmed, dispatch, dialog, deleteBoard, navigate]);
 

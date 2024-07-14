@@ -32,11 +32,6 @@ const NewBoardItem = () => {
             value: '',
             required: { min: 4, max: 25 },
           },
-          {
-            name: 'Template',
-            type: 'text',
-            value: '',
-          },
         ],
       })
     );
