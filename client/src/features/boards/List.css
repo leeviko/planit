@@ -52,6 +52,7 @@
   background-color: var(--card-bg);
   padding: 0.5rem;
   border-radius: var(--border-radius);
+  cursor: grab;
 }
 
 .card-content {
