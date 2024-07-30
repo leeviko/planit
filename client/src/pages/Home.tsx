@@ -1,9 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import '../styles/Home.css';
-import noAuthRoute from '../features/auth/NoAuthRoute';
 import Pattern from '../assets/pattern.svg';
+import { useAuth } from '../features/auth/useAuth';
 
 const HomePage = () => {
+  const auth = useAuth();
+
+  if (auth.isAuth) return <Navigate to={'/boards'} replace />;
+
   return (
     <div className="home-page">
       <div className="home-header">
@@ -54,5 +58,4 @@ const HomePage = () => {
   );
 };
 
-const WrappedHomePage = noAuthRoute(HomePage, '/boards');
-export default WrappedHomePage;
+export default HomePage;

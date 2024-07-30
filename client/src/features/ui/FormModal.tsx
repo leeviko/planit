@@ -5,7 +5,7 @@ import useForm from '../../hooks/useForm';
 import './FormModal.css';
 import { hideFormModal, submitFormModal } from './uiSlice';
 import { createPortal } from 'react-dom';
-import Loader from './Loader';
+import LoaderInline from './LoaderInline';
 
 const FormModalContainer = () => {
   const show = useSelector((state: RootState) => state.ui.showFormModal);
@@ -73,8 +73,9 @@ const FormModal = () => {
             type="submit"
             onClick={handleSubmit}
             onKeyUp={(e) => e.key === 'Enter' && handleSubmit()}
+            disabled={modal.isLoading}
           >
-            {modal.isLoading ? <Loader /> : modal.buttonText}
+            {modal.isLoading ? <LoaderInline /> : modal.buttonText}
           </button>
           {modal.error && <p className="errors">{modal.error}</p>}
         </form>

@@ -7,14 +7,14 @@ import FormModal from '../features/ui/FormModal';
 import Dialog from '../features/ui/Dialog';
 
 const Root = () => {
-  const { isAuth, isLoading } = useAuth();
+  const { isAuth } = useAuth();
 
   return (
     <>
       <Dialog />
       <Toast />
       <FormModal />
-      {!isLoading && (isAuth ? <AuthNavbar /> : <Navbar />)}
+      {isAuth ? <AuthNavbar /> : <Navbar />}
       <Outlet />
     </>
   );

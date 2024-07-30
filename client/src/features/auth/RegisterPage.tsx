@@ -9,6 +9,7 @@ import { setUser } from './authSlice';
 import useForm from '../../hooks/useForm';
 import noAuthRoute from './NoAuthRoute';
 import { ValidationErrors } from '../api/apiSlice';
+import LoaderInline from '../ui/LoaderInline';
 
 const RegisterPage = () => {
   const [values, handleChange] = useForm({
@@ -118,8 +119,9 @@ const RegisterPage = () => {
             onChange={handleChange}
             className={errors.password ? 'invalid' : ''}
           />
-          <button className="btn" type="submit">
-            Register
+          <button className="btn" type="submit" disabled={isLoading}>
+            {isLoading && <LoaderInline />}
+            {!isLoading && 'Register'}
           </button>
           {error && <p className="errors">{error}</p>}
           {errors.email && <p className="errors">{errors.email}</p>}

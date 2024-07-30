@@ -10,6 +10,7 @@ import noAuthRoute from './NoAuthRoute';
 import { showToast } from '../ui/uiSlice';
 import Toast from '../ui/Toast';
 import { ValidationErrors } from '../api/apiSlice';
+import LoaderInline from '../ui/LoaderInline';
 
 const LoginPage = () => {
   const [values, handleChange] = useForm({
@@ -99,12 +100,13 @@ const LoginPage = () => {
               className={errors.password ? 'invalid' : ''}
               onChange={handleChange}
             />
-            <button className="btn" type="submit">
-              Login
+            <button className="btn" type="submit" disabled={isLoading}>
+              {isLoading && <LoaderInline />}
+              {!isLoading && 'Login'}
             </button>
             {error && <p className="errors">{error}</p>}
             {errors.username && <p className="errors">{errors.username}</p>}
-            {errors.password && <p className="errors">{errors.username}</p>}
+            {errors.password && <p className="errors">{errors.password}</p>}
           </form>
           <div className="box-footer">
             <p>
