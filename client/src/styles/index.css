@@ -44,6 +44,8 @@
   --board-navbar-height: 50px;
 
   --landing-padding: 600px;
+
+  --landing-width: 1040px;
 }
 
 @font-face {
@@ -88,6 +90,7 @@ input {
 }
 
 .btn-lg {
+  font-family: inherit;
   transition: all 0.15s ease;
   color: rgba(255, 255, 255, 0.8);
   background-color: var(--accent);
@@ -97,7 +100,7 @@ input {
 
 .btn-lg-line {
   transition: all 0.15s ease;
-  background-color: var(--bg);
+  background: none;
   color: rgba(255, 255, 255, 0.8);
   padding: 0.5rem 1.25rem;
   border: 2px solid var(--accent);

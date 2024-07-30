@@ -12,22 +12,24 @@ const AuthNavbar = () => {
 
   return (
     <>
-      <nav className="nav">
-        <div className="nav-auth nav-content">
-          <Link to="/boards">
-            <img className="logo" src={Logo} alt="" />
-          </Link>
-          <button
-            className="settings-btn"
-            onClick={() => dispatch(toggleSettings())}
-          >
-            <img
-              className="settings-img"
-              src={SettingsSVG}
-              alt="Settings"
-              draggable="false"
-            />
-          </button>
+      <nav className="nav-auth">
+        <div className="nav-content-wrapper">
+          <div className="nav-content">
+            <Link to="/boards">
+              <img className="logo" src={Logo} alt="" />
+            </Link>
+            <button
+              className="settings-btn"
+              onClick={() => dispatch(toggleSettings())}
+            >
+              <img
+                className="settings-img"
+                src={SettingsSVG}
+                alt="Settings"
+                draggable="false"
+              />
+            </button>
+          </div>
         </div>
       </nav>
 

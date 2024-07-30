@@ -1,4 +1,4 @@
-.nav {
+nav {
   background-color: var(--black);
   height: var(--navbar-height);
   box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.25);
@@ -6,16 +6,31 @@
 
 .nav-content {
   display: flex;
-  height: inherit;
   justify-content: space-between;
   align-items: center;
 }
 
-.nav-noauth {
-  margin: 0 var(--landing-padding);
+.nav-no-auth .nav-content-wrapper {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
-.nav-auth {
+
+.nav-no-auth .nav-content {
+  width: var(--landing-width);
+}
+
+.nav-auth .nav-content {
+  width: 100%;
+}
+
+.nav-auth .nav-content-wrapper {
   margin: 0 25px;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .logo {
