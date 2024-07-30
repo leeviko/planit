@@ -8,26 +8,23 @@
   - [x] Register
   - [x] Login
   - [x] Logout
-  - [ ] Remember me
-- [ ] 🖼️ Boards
+- [x] 🖼️ Boards
   - [x] Create board
-  - [ ] Edit board
+  - [x] Edit board
   - [x] Favorite board
-  - [ ] Delete board
-  - [ ] 📃 Lists
-    - [x] Create a list
-    - [ ] Edit list
-    - [ ] Delete list
-    - [ ] Cards
-      - [ ] Create card
-      - [ ] Edit card
-      - [ ] Delete card
-  - [x] 🫳 Drag and drop
-    - [x] Move lists
-    - [ ] Move cards
-- [ ] Board activity page
-- [ ] Manage account page
-- [ ] Change theme
+  - [x] Delete board
+- [x] 📃 Lists
+  - [x] Create a list
+  - [x] Edit list
+  - [x] Delete list
+  - [x] Cards
+    - [x] Create card
+    - [x] Edit card
+    - [x] Delete card
+- [x] 🫳 Drag and drop
+  - [x] Move lists
+  - [x] Move cards
+- [x] 🕴️ Manage account page
 
 ## How to run
 
