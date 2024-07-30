@@ -1,5 +1,5 @@
 .board-navbar {
-  background-color: var(--grey);
+  background-color: var(--grey-darker);
   height: var(--board-navbar-height);
   display: flex;
   justify-content: space-between;

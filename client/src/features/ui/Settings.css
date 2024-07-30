@@ -1,11 +1,11 @@
 .settings-dropdown {
   position: absolute;
-  background-color: var(--accent-dark);
+  background-color: var(--accent-dark-020);
   padding: 0.75rem 1.25rem;
   transition: opacity 150ms ease-in-out, transform 150ms ease-in-out;
   right: 0;
   margin-right: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--border-radius);
   width: 250px;
   color: rgba(255, 255, 255, 0.8);
