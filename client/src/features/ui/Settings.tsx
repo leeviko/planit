@@ -7,6 +7,7 @@ import { RootState } from '../../app/store';
 
 import './Settings.css';
 import { useEffect, useRef } from 'react';
+import ProfilePicture from '../me/ProfilePicture';
 
 const Settings = () => {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -61,15 +62,26 @@ const Settings = () => {
       <div className="settings-section">
         <p className="settings-section-title">Account</p>
         <div className="settings-account">
-          <p className="username">{user?.username}</p>
-          <p className="email">{user?.email}</p>
+          {user && (
+            <div>
+              <ProfilePicture username={user.username} />
+            </div>
+          )}
+          <div className="details">
+            <p className="username">{user?.username}</p>
+            <p className="email">{user?.email}</p>
+          </div>
         </div>
-        <Link className="settings-link" to="#">
+        <Link
+          className="settings-link"
+          to="/me/account"
+          onClick={() => dispatch(toggleSettings())}
+        >
           Manage account
         </Link>
       </div>
 
-      <div className="settings-section">
+      {/* <div className="settings-section">
         <p className="settings-section-title">Planit</p>
         <Link className="settings-link" to="#">
           Activity
@@ -77,7 +89,7 @@ const Settings = () => {
         <Link className="settings-link" to="#">
           Theme
         </Link>
-      </div>
+      </div> */}
 
       <div className="settings-section">
         <button className="settings-link logout-link" onClick={handleLogout}>

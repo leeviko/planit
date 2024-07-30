@@ -11,6 +11,7 @@ import RegisterPage from './features/auth/RegisterPage.tsx';
 import BoardsPage from './features/boards/BoardsPage.tsx';
 import BoardPage from './features/boards/BoardPage.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
+import Account from './features/me/Account.tsx';
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       { path: '/', element: <Home /> },
       { path: '/boards', element: <BoardsPage /> },
       { path: '/boards/:id', element: <BoardPage /> },
+      { path: '/me/account', element: <Account /> },
     ],
     errorElement: <ErrorPage />,
   },

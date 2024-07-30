@@ -10,7 +10,6 @@
   width: 250px;
   color: rgba(255, 255, 255, 0.8);
   top: var(--navbar-height);
-  height: 275px;
   z-index: 2;
 }
 
@@ -69,13 +68,24 @@
 }
 
 .settings-account {
-  margin: 0.5rem 0 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  margin: 0.5rem 0 0.5rem 0rem;
+}
+
+.settings-account .details {
+  margin-left: 1rem;
 }
 
 .settings-account-link,
 .settings-account .username {
   font-size: 1rem;
 }
+
+.settings-account .username {
+  font-weight: 500;
+}
+
 .settings-account .email {
   color: rgba(255, 255, 255, 0.8);
   font-size: 0.8rem;

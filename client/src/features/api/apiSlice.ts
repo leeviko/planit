@@ -85,6 +85,26 @@ export const apiSlice = createApi({
       }),
       invalidatesTags: ['User'],
     }),
+
+    updateUser: builder.mutation<User, { id: string; username: string }>({
+      query: ({ id, username }) => ({
+        url: `/users/${id}`,
+        method: 'PUT',
+        credentials: 'include',
+        body: {
+          username,
+        },
+      }),
+      invalidatesTags: ['User'],
+    }),
+    deleteUser: builder.mutation<{ ok: boolean }, string>({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'DELETE',
+        credentials: 'include',
+      }),
+      invalidatesTags: ['User'],
+    }),
     validateSession: builder.query<User, undefined>({
       query: () => ({
         url: '/auth',
@@ -237,6 +257,8 @@ export const {
   useRegisterMutation,
   useLoginMutation,
   useLogoutMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
   useValidateSessionQuery,
 
   useGetBoardsQuery,

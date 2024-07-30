@@ -1,0 +1,80 @@
+.profile-picture {
+  border-radius: 50%;
+  height: 48px;
+  width: 48px;
+  font-size: 24px;
+  font-weight: 500;
+  text-transform: uppercase;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+.account-page {
+  display: flex;
+  justify-content: center;
+  margin-top: 3rem;
+}
+
+.account-page-content {
+  display: flex;
+  flex-direction: column;
+  width: 450px;
+  padding: 2rem;
+}
+
+.account-details {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.account-details .details {
+  margin-left: 1rem;
+}
+
+.account-details .username {
+  font-weight: 500;
+}
+.account-details .email {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.account-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.account-section.about {
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+  border-bottom: 2px solid rgba(148, 148, 148, 0.3);
+}
+
+.account-section h3 {
+  padding: 0.25rem 0;
+  font-weight: 500;
+  border-bottom: 2px solid rgba(148, 148, 148, 0.3);
+}
+
+.account-section form {
+  width: fit-content;
+  padding: 0;
+}
+
+.account-section label {
+  font-size: 0.9rem;
+}
+
+.account-section button {
+  border: none;
+  padding: 0.3rem 1rem;
+  font-size: 0.9rem;
+  width: fit-content;
+}
+
+.account-section.about button {
+  margin-top: 2rem;
+}
