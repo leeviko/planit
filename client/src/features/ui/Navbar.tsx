@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import Logo from '../../assets/logo.svg';
 import './Navbar.css';
 
@@ -7,7 +8,9 @@ const Navbar = () => {
       <div className="nav-content-wrapper">
         <div className="nav-content">
           <img className="logo" src={Logo} alt="" />
-          <button className="btn">Go to boards</button>
+          <Link to="/login" className="btn-line">
+            Login
+          </Link>
         </div>
       </div>
     </nav>

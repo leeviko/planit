@@ -5,9 +5,14 @@ nav {
 }
 
 .nav-content {
+  font-size: 0.9rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.nav-no-auth a {
+  padding: 0.3rem 1rem;
 }
 
 .nav-no-auth .nav-content-wrapper {

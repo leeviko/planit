@@ -26,6 +26,28 @@
   - [x] Move cards
 - [x] 🕴️ Manage account page
 
+## Images
+
+### Landing page
+
+![Landing page](gallery/landing.png)
+
+### Login page
+
+![Login page](gallery/login.png)
+
+### Boards page
+
+![Boards page](gallery/boards.png)
+
+### Board page
+
+![Board page](gallery/board.png)
+
+### Manage account page
+
+![Manage account page](gallery/manage_account.png)
+
 ## How to run
 
 1. Clone repo
