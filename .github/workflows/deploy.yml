@@ -26,8 +26,8 @@ jobs:
       - name: Frontend image
         run: |
           cd client
-          docker build -f Dockerfile.prod -t ghcr.io/leeviko/blog-frontend .
-          docker push ghcr.io/leeviko/blog-frontend
+          docker build -f Dockerfile.prod -t ghcr.io/leeviko/planit-frontend .
+          docker push ghcr.io/leeviko/planit-frontend
       - name: Backend image
         run: |
           cd server
