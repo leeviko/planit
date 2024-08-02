@@ -94,6 +94,7 @@ const List = ({ board_id, id, title, cards, handleDeleteDialog }: Props) => {
                 list_id={id}
                 id={card.id}
                 title={card.title}
+                board_id={board_id}
                 pos={card.position}
               />
             ))}

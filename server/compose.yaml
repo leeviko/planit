@@ -1,0 +1,12 @@
+services:
+  server:
+    image: ghcr.io/leeviko/planit-backend
+    container_name: planit-backend
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    depends_on:
+      - redis
+  redis:
+    image: redis:alpine
+    container_name: store

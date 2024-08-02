@@ -1,0 +1,24 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+ENV VITE_API_URL=https://planit.leevi.dev/api
+
+COPY package.json ./
+COPY yarn.lock ./
+COPY tsconfig*.json ./
+
+RUN yarn 
+COPY . .
+RUN yarn build
+
+FROM nginx:stable-alpine
+
+ENV NODE_ENV=production
+
+COPY --from=0 /app/dist /usr/share/nginx/html
+COPY --from=0 /app/nginx/nginx.conf /etc/nginx/nginx.conf
+
+EXPOSE 80 443
+
+CMD ["nginx", "-g", "daemon off;"]

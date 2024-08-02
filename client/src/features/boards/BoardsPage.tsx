@@ -6,7 +6,7 @@ import BoardsList from './BoardsList';
 import NewBoardItem from './NewBoardItem';
 
 const BoardsPage = () => {
-  const { data, error, isLoading } = useGetBoardsQuery(undefined);
+  const { data, isLoading } = useGetBoardsQuery(undefined);
 
   const favoritedBoards = data?.filter((board: Board) => board.favorited) || [];
 

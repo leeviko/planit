@@ -1,0 +1,34 @@
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json ./
+COPY yarn.lock ./
+
+RUN yarn
+
+COPY . .
+
+RUN yarn build
+
+#
+FROM node:20-alpine AS runner
+
+RUN mkdir -p /home/node/app/dist && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+ENV NODE_ENV=production
+
+COPY package.json ./
+COPY yarn.lock ./
+
+USER node
+
+RUN yarn
+
+COPY --chown=node:node --from=builder /app/dist ./dist
+
+EXPOSE 5000
+
+ENTRYPOINT [ "node", "./dist/server.js" ]
