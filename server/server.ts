@@ -23,6 +23,8 @@ app.use(express.json());
 
 app.use(morgan('dev'));
 
+app.set('trust proxy', 1);
+
 const redisClient = createClient({ url: process.env.REDIS_URL });
 redisClient.connect().catch(console.error);
 
