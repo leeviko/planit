@@ -31,4 +31,6 @@ COPY --chown=node:node --from=builder /app/dist ./dist
 
 EXPOSE 5000
 
+USER node
+
 ENTRYPOINT [ "node", "./dist/server.js" ]
