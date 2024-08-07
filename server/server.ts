@@ -21,7 +21,11 @@ const port = process.env.PORT || 5000;
 
 app.use(express.json());
 
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
+}
 
 app.set('trust proxy', 1);
 
