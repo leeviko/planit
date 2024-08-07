@@ -12,21 +12,75 @@ import BoardsPage from './features/boards/BoardsPage.tsx';
 import BoardPage from './features/boards/BoardPage.tsx';
 import ErrorPage from './pages/ErrorPage.tsx';
 import Account from './features/me/Account.tsx';
+import PageTitle from './components/PageTitle.tsx';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
     children: [
-      { path: '/', element: <Home /> },
-      { path: '/boards', element: <BoardsPage /> },
-      { path: '/boards/:id', element: <BoardPage /> },
-      { path: '/me/account', element: <Account /> },
+      {
+        path: '/',
+        element: (
+          <>
+            <PageTitle title="Planit" />
+            <Home />
+          </>
+        ),
+      },
+      {
+        path: '/boards',
+        element: (
+          <>
+            <PageTitle title="Planit - Boards" />
+            <BoardsPage />
+          </>
+        ),
+      },
+      {
+        path: '/boards/:id',
+        element: (
+          <>
+            <PageTitle title="Planit - Board" />
+            <BoardPage />
+          </>
+        ),
+      },
+      {
+        path: '/me/account',
+        element: (
+          <>
+            <PageTitle title="Planit - Manage account" />
+            <Account />
+          </>
+        ),
+      },
     ],
-    errorElement: <ErrorPage />,
+    errorElement: (
+      <>
+        <PageTitle title="Planit - Error" />
+        <ErrorPage />
+      </>
+    ),
   },
-  { path: '/login', element: <LoginPage /> },
-  { path: '/register', element: <RegisterPage /> },
+  {
+    path: '/login',
+    element: (
+      <>
+        <PageTitle title="Planit - Login" />
+        <LoginPage />
+      </>
+    ),
+  },
+  {
+    path: '/register',
+    element: (
+      <>
+        <PageTitle title="Planit - Register" />
+        <RegisterPage />
+      </>
+    ),
+  },
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
