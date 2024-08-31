@@ -41,3 +41,9 @@ nav {
 .logo {
   width: 100px;
 }
+
+@media screen and (max-width: 1070px) {
+  .nav-content {
+    margin: 0 2rem;
+  }
+}

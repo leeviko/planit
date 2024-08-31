@@ -7,7 +7,6 @@ import { useEffect } from 'react';
 export const useAuth = () => {
   const dispatch = useDispatch();
   const isAuth = useSelector((state: RootState) => state.auth.isAuth);
-  const authStatus = useSelector((state: RootState) => state.auth.status);
   const { data, error, isLoading } = useValidateSessionQuery(undefined, {
     skip: isAuth,
   });
@@ -16,11 +15,10 @@ export const useAuth = () => {
     if (isAuth) return;
     if (data) {
       dispatch(setUser(data));
-      return;
     } else {
       dispatch(authFailed());
     }
-  }, [data, error, dispatch, isAuth, authStatus, isLoading]);
+  }, [data, error, dispatch, isAuth]);
 
   return { isAuth: isAuth || !!data, isLoading, error };
 };

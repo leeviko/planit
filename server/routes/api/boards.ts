@@ -108,15 +108,16 @@ router.post(
       .trim()
       .isLength({ min: 3, max: 45 })
       .withMessage('Title must be between 3 and 45 characters.'),
+    body('private').escape().trim().isBoolean().default(false),
   ],
   auth,
   validationRes,
   async (req: Request, res: Response) => {
     const user = req.session.user!;
-    const { title } = req.body;
+    const { title, private: isPrivate } = req.body;
 
     try {
-      const result = await createBoard(user, title);
+      const result = await createBoard(user, title, isPrivate);
       if (!result.ok) {
         return res.status(result.status).json({ msg: result.msg });
       }
@@ -146,6 +147,7 @@ router.put(
       .isLength({ min: 3, max: 45 })
       .withMessage('Title must be between 3 and 45 characters.'),
     body('favorited').optional().escape().trim().toBoolean(),
+    body('private').optional().escape().trim().toBoolean(),
   ],
   auth,
   validationRes,
@@ -153,8 +155,12 @@ router.put(
     const user = req.session.user!;
     const boardId = req.params.boardId;
 
-    const { title, favorited } = req.body;
-    if (!title && typeof favorited !== 'boolean') {
+    const { title, favorited, private: isPrivate } = req.body;
+    if (
+      !title &&
+      typeof favorited !== 'boolean' &&
+      typeof isPrivate !== 'boolean'
+    ) {
       return res.status(400).json({ msg: 'No fields to update.' });
     }
 

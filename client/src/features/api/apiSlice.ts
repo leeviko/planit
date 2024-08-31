@@ -23,6 +23,7 @@ type BoardUpdate = {
 
 type NewBoard = {
   name: string;
+  private: boolean;
 };
 
 type ListUpdate = {
@@ -130,12 +131,13 @@ export const apiSlice = createApi({
         result ? [{ type: 'Board', id: result.id }] : [],
     }),
     createBoard: builder.mutation<Board, NewBoard>({
-      query: ({ name }) => ({
+      query: ({ name, private: isPrivate }) => ({
         url: '/boards',
         method: 'POST',
         credentials: 'include',
         body: {
           title: name,
+          private: isPrivate,
         },
       }),
       invalidatesTags: ['Board'],

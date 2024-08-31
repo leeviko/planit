@@ -32,6 +32,11 @@ const NewBoardItem = () => {
             value: '',
             required: { min: 4, max: 25 },
           },
+          {
+            name: 'Private',
+            type: 'checkbox',
+            value: false,
+          },
         ],
       })
     );
@@ -39,7 +44,8 @@ const NewBoardItem = () => {
 
   const handleSubmit = async () => {
     const data = {
-      name: modalValues[0].value,
+      name: modalValues[0].value as string,
+      private: modalValues[1].value as boolean,
     };
 
     dispatch(setFormModalLoading(true));

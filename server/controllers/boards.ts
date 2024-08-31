@@ -24,6 +24,7 @@ export interface NewBoard {
   user_id: string;
   slug: string;
   title: string;
+  private: boolean;
 }
 
 export type BoardUpdate = {
@@ -132,18 +133,20 @@ type CreateBoardSuccess = {
  */
 export async function createBoard(
   user: UserResult,
-  title: string
+  title: string,
+  isPrivate: boolean
 ): Promise<CreateBoardSuccess | ServerError> {
   const newBoard: NewBoard = {
     id: nanoid(),
     user_id: user.id,
     slug: slug(title),
     title,
+    private: isPrivate,
   };
 
   const boardQuery = `
-    INSERT INTO boards (id, user_id, slug, title) 
-    VALUES ($1, $2, $3, $4) 
+    INSERT INTO boards (id, user_id, slug, title, private) 
+    VALUES ($1, $2, $3, $4, $5) 
     RETURNING *
   `;
 
@@ -153,6 +156,7 @@ export async function createBoard(
       newBoard.user_id,
       newBoard.slug,
       newBoard.title,
+      newBoard.private,
     ]);
     return { ok: true, data: result.rows[0] };
   } catch (err: any) {

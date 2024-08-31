@@ -17,6 +17,10 @@ const FormModalContainer = () => {
 const FormModal = () => {
   const modal = useSelector((state: RootState) => state.ui.formModal);
   const initialValues = modal.inputs.reduce((acc: any, input) => {
+    if (input.type === 'checkbox') {
+      acc[input.name] = false;
+      return acc;
+    }
     acc[input.name] = '';
     return acc;
   }, {});
@@ -59,13 +63,28 @@ const FormModal = () => {
         <form onSubmit={(e) => e.preventDefault()}>
           {modal.inputs.map((input) => (
             <React.Fragment key={input.name}>
-              <label>{input.name}</label>
-              <input
-                type={input.type}
-                name={input.name}
-                value={values[input.name]}
-                onChange={handleChange}
-              />
+              {input.type === 'checkbox' && (
+                <div className="checkbox-container">
+                  <input
+                    type={input.type}
+                    name={input.name}
+                    checked={values[input.name]}
+                    onChange={handleChange}
+                  />
+                  <label>{input.name}</label>
+                </div>
+              )}
+              {input.type === 'text' && (
+                <>
+                  <label>{input.name}</label>
+                  <input
+                    type={input.type}
+                    name={input.name}
+                    value={values[input.name]}
+                    onChange={handleChange}
+                  />
+                </>
+              )}
             </React.Fragment>
           ))}
           <button

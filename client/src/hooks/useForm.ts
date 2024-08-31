@@ -8,7 +8,8 @@ const useForm = <T>(initialValues: T) => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setValues({
         ...values,
-        [e.target.name]: e.target.value,
+        [e.target.name]:
+          e.target.type === 'checkbox' ? e.target.checked : e.target.value,
       });
     },
   ] as [T, (e: React.ChangeEvent<HTMLInputElement>) => void];

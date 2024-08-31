@@ -13,7 +13,7 @@ export type UIState = {
     inputs: {
       name: string;
       type: string;
-      value: string;
+      value: string | boolean;
       placeholder?: string;
       required?: { min: number; max: number };
     }[];

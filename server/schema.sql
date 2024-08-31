@@ -46,6 +46,7 @@ CREATE TABLE public.boards (
     slug character varying(150) NOT NULL,
     title character varying(100) NOT NULL,
     favorited boolean DEFAULT false NOT NULL,
+    private boolean DEFAULT false NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
