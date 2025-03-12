@@ -6,6 +6,7 @@ declare global {
       SESSION_SECRET: string;
       DATABASE_URL: string;
       ORIGIN: string;
+      PG_PORT: number;
     }
   }
 }
