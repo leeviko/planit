@@ -14,13 +14,14 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=5000
 
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/migrations ./migrations
-COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
+COPY package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile --production
 
-USER node
+# copy compiled code and migrations
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/migrations ./migrations
 
+USER node
 EXPOSE 5000
 ENTRYPOINT ["node", "./dist/server.js"]
