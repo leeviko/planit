@@ -1,0 +1,72 @@
+
+services:
+  server:
+    image: ghcr.io/leeviko/planit-server:latest
+    container_name: planit_server
+    build:
+      context: ./server
+      dockerfile: Dockerfile.prod
+    restart: always
+    env_file:
+      - .env.server
+    depends_on:
+      - redis
+      - postgres
+    networks:
+      - internal
+    environment:
+      - NODE_ENV=production
+    expose:
+      - "5000"
+
+  redis:
+    image: redis:alpine
+    container_name: planit_redis
+    restart: always
+    networks:
+      - internal
+    expose:
+      - "6379"
+
+  postgres:
+    image: postgres:16
+    container_name: planit_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - internal
+    ports:
+      - "5432:5432"
+
+  client:
+    image: ghcr.io/leeviko/planit-client:latest
+    container_name: planit-client
+    build:
+      context: ./client
+      dockerfile: Dockerfile.prod
+    restart: always
+    env_file:
+      - .env.client
+    environment:
+      - NODE_ENV=production
+      - VIRTUAL_HOST=planit.leevi.dev
+      - LETSENCRYPT_HOST=planit.leevi.dev
+      - LETSENCRYPT_EMAIL=you@yourdomain.com
+    networks:
+      - proxy
+    expose:
+      - "80"
+
+volumes:
+  postgres_data:
+
+networks:
+  proxy:
+    external: true
+  internal:
+    driver: bridge  
