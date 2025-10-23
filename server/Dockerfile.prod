@@ -18,10 +18,12 @@ COPY package.json yarn.lock ./
 
 RUN yarn install --frozen-lockfile --production
 
-# copy compiled code and migrations
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/migrations ./migrations
 
 USER node
 EXPOSE 5000
-ENTRYPOINT ["node", "./dist/server.js"]
+
+COPY --chown=node:node docker-entrypoint.sh /app/
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
