@@ -16,6 +16,7 @@ ENV PORT=5000
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/node_modules/.bin ./node_modules/.bin
 
 RUN yarn install --frozen-lockfile --production
 
